@@ -8,7 +8,7 @@ datasource db {
 }
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
-model delivery_addr {
+model p2021_delivery_addr_m {
   PRODUCT_SEQ          String    @db.VarChar(20)
   EMP_KEY_TELNO        String?   @db.VarChar(200)
   EMP_NM               String?   @db.VarChar(200)
@@ -28,10 +28,20 @@ model delivery_addr {
   D_C_CD               String?   @db.VarChar(50)
   D_HOPE_DT            String?   @db.VarChar(20)
 
+  @@unique([PRODUCT_SEQ, EMP_KEY_TELNO], map: "uq_delivery")
   @@ignore
 }
 
-model product {
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model p2021_login_msg_m {
+  LOGIN_YN       String @db.VarChar(1)
+  LOGIN_ALLOW_ID String @db.VarChar(300)
+  LOGIN_MSG      String @db.VarChar(500)
+
+  @@ignore
+}
+
+model p2021_product_m {
   SEQ          String    @id @db.VarChar(10)
   PRODUCT_NM   String    @db.VarChar(100)
   PRODUCT_STDT String    @db.VarChar(14)
@@ -41,7 +51,16 @@ model product {
   PROGRESS_YN  String    @default("") @db.Char(1)
 }
 
-model user {
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model p2021_user_login_h {
+  LOGIN_ID String?   @db.VarChar(200)
+  REG_DTTM DateTime?
+  LOGIN_IP String?   @db.VarChar(250)
+
+  @@ignore
+}
+
+model p2021_user_m {
   LOGIN_ID String   @id @db.VarChar(20)
   LOGIN_NM String   @db.VarChar(50)
   COMP_NM  String   @db.VarChar(100)
