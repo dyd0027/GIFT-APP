@@ -8,7 +8,7 @@ interface UserState {
 
 export const useUserStore = create<UserState>((set) => ({
   user: null,
-  setUser: (user) => set({user}),
+  setUser: (user) => set({ user }),
   logout: async () => {
     await fetch('/api/logout', { method: 'POST' });
     set({ user: null });

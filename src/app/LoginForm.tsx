@@ -1,7 +1,8 @@
 'use client';
 
-import { useUserStore } from '@/store/userStore';
 import { useState } from 'react';
+
+import { useUserStore } from '@/store/userStore';
 
 const LoginForm = () => {
   const [loginId, setLoginId] = useState('');
@@ -18,7 +19,7 @@ const LoginForm = () => {
 
     const result = await res.json();
     if (result.success) {
-      console.log('reslut.uer',result.user);
+      console.log('reslut.uer', result.user);
       setUser(result.user);
       window.location.reload();
     } else {
@@ -27,41 +28,41 @@ const LoginForm = () => {
   };
 
   return (
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-sm space-y-4 bg-white p-6 rounded-xl shadow-md mt-8"
+    <form
+      onSubmit={handleSubmit}
+      className="mt-8 w-full max-w-sm space-y-4 rounded-xl bg-white p-6 shadow-md"
+    >
+      <h1 className="text-center text-2xl font-bold">선물 신청 로그인</h1>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700">전화번호</label>
+        <input
+          type="text"
+          value={loginId}
+          onChange={(e) => setLoginId(e.target.value)}
+          placeholder="01012345678"
+          className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:outline-none focus:ring"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700">이름</label>
+        <input
+          type="text"
+          value={loginNm}
+          onChange={(e) => setLoginNm(e.target.value)}
+          placeholder="홍길동"
+          className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:outline-none focus:ring"
+        />
+      </div>
+
+      <button
+        type="submit"
+        className="w-full rounded-md bg-blue-600 p-2 text-white hover:bg-blue-700"
       >
-        <h1 className="text-2xl font-bold text-center">선물 신청 로그인</h1>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">전화번호</label>
-          <input
-            type="text"
-            value={loginId}
-            onChange={(e) => setLoginId(e.target.value)}
-            placeholder="01012345678"
-            className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:outline-none"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">이름</label>
-          <input
-            type="text"
-            value={loginNm}
-            onChange={(e) => setLoginNm(e.target.value)}
-            placeholder="홍길동"
-            className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:outline-none"
-          />
-        </div>
-
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700"
-        >
-          로그인
-        </button>
-      </form>
+        로그인
+      </button>
+    </form>
   );
-}
+};
 export default LoginForm;

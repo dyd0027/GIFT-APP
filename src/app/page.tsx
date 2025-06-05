@@ -1,8 +1,11 @@
-import LoginForm from './LoginForm';
 import { cookies } from 'next/headers';
-import { verifyToken } from '@/lib/auth';
+
+import LoginForm from './LoginForm';
 import MainForm from './MainForm';
-export default function HomePage() {
+
+import { verifyToken } from '@/lib/auth';
+
+const HomePage = () => {
   const cookieStore = cookies();
   const token = cookieStore.get('token')?.value;
 
@@ -16,9 +19,7 @@ export default function HomePage() {
       console.error('Invalid token:', err);
     }
   }
-  return (
-    <main>
-      {isLoggedIn ? <MainForm /> : <LoginForm />}
-    </main>
-  );
-}
+  return <main>{isLoggedIn ? <MainForm /> : <LoginForm />}</main>;
+};
+
+export default HomePage;
