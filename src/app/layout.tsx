@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import './globals.css';
 import Providers from '@/app/providers';
+import Header from '@/components/Header';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -27,8 +28,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} flex min-h-screen items-center justify-center bg-gray-100 px-4 antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} flex min-h-screen flex-col items-center justify-center bg-gray-100 antialiased`}
       >
+        <Header />
         <Providers>{children}</Providers>
       </body>
     </html>
