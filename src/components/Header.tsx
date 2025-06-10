@@ -60,6 +60,17 @@ export default function Header() {
                 className="absolute right-0 z-50 mt-2 w-48 overflow-hidden rounded-xl bg-white text-black shadow-xl"
               >
                 <ul className="flex flex-col divide-y">
+                  {user.LOGIN_ID === process.env.NEXT_PUBLIC_ADMIN_ID && (
+                    <li>
+                      <Link
+                        href="/admin"
+                        className="block px-4 py-2 hover:bg-indigo-100"
+                        onClick={toggleMenu}
+                      >
+                        관리자페이지
+                      </Link>
+                    </li>
+                  )}
                   <li>
                     <Link
                       href="/page1"

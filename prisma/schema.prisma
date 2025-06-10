@@ -63,8 +63,8 @@ model p2021_user_login_h {
 model p2021_user_m {
   LOGIN_ID String   @id @db.VarChar(20)
   LOGIN_NM String   @db.VarChar(50)
-  COMP_NM  String   @db.VarChar(100)
-  HQ_NM    String   @db.VarChar(100)
-  DEPT_NM  String   @db.VarChar(100)
-  REG_DTTM DateTime
+  COMP_NM  String?  @db.VarChar(100)
+  HQ_NM    String?  @db.VarChar(100)
+  DEPT_NM  String?  @db.VarChar(100)
+  REG_DTTM DateTime @default(now())
 }
