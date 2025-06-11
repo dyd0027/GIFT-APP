@@ -57,7 +57,6 @@ export default function UserUploadForm() {
     if (duplicates.length > 0) {
       return alert(`중복된 전화번호가 있습니다: ${duplicates.join(', ')}`);
     }
-    console.log('insertData', insertData);
     const res = await fetch('/api/admin/user/replace', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
