@@ -29,8 +29,13 @@ export default function UserUploadForm() {
     const rows: any[] = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
     const [header, ...body] = rows;
-    if (!header.includes('전화번호') || !header.includes('이름')) {
-      return alert('엑셀의 첫 줄은 전화번호, 이름, 회사명, 본부명, 팀명 순이어야 합니다.');
+    const headerSort = ['전화번호', '이름', '회사명', '본부명', '팀명'];
+    const isValidHeader =
+      Array.isArray(header) &&
+      header.length === headerSort.length &&
+      header.every((col, idx) => col === headerSort[idx]);
+    if (!isValidHeader) {
+      return alert('엑셀의 첫 줄은 [전화번호, 이름, 회사명, 본부명, 팀명] 순이어야 합니다.');
     }
 
     const insertData: UserExcelRow[] = [];
