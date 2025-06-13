@@ -30,7 +30,7 @@ export default function Header() {
   }, [menuOpen]);
 
   return (
-    <header className="absolute top-0 flex w-full items-center justify-between bg-gray-800 px-4 py-3 text-white shadow-md">
+    <header className="absolute top-0 flex w-full items-center justify-between bg-[#222] px-4 py-3 text-white shadow-md">
       <div className="text-xl font-bold">
         <Link href="/">🎁 선물하기</Link>
       </div>
