@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🎁 선물 신청 사이트
 
-## Getting Started
+사내 선물 신청을 온라인으로 간편하게 받을 수 있도록 만든 시스템입니다.  
+사용자는 로그인 후 선물 설명을 확인하고 신청할 수 있으며,  
+관리자는 품목 및 대상 인원을 손쉽게 등록/관리할 수 있습니다.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🚀 기술 스택
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **Next.js 14 (App Router 기반)**
+- **React 18**
+- **TypeScript**
+- **Zustand** – 전역 상태 관리
+- **React Query** – 데이터 패칭 및 캐싱
+- **Tailwind CSS** – 스타일링
+- **Prisma** – DB ORM
+- **MariaDB**
+- **Framer Motion** – UI 애니메이션
+- **XLSX** – 엑셀 파싱
+- **Lucide React** – 아이콘
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📱 유저 페이지 기능
 
-## Learn More
+- 🔐 **로그인 페이지**  
+  - 이름 + 전화번호 기반 간단 로그인
 
-To learn more about Next.js, take a look at the following resources:
+- 📄 **선물 설명 페이지**  
+  - 신청 전 선물의 설명 및 조건 확인
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- 📝 **선물 신청 페이지**  
+  - 기간 내 본인이 받을 선물 선택 및 신청
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- 📦 **신청 확인 페이지**  
+  - 신청 완료 후 본인이 선택한 품목 확인 가능
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🛠️ 관리자 페이지 기능
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- 🏷️ **TITLE 추가**
+  - 품목 제목 / 신청 기간 / 조회 기간 설정
+
+- 🎁 **품목 추가**
+  - 단수/복수 선택  
+  - 품목명 / 사진 / 멘트 등록  
+  - 수령 방식(날짜 or 수령지점 별 날짜지정)  
+  - 엑셀/수기 입력 + 순서변경 기능  
+  - 한 번에 여러 품목 등록 가능
+
+- ✏️ **품목 수정/삭제**
+  - 기존 등록된 품목에 대한 수정/삭제 기능
+
+- 🔄 **템플릿 복사 기능**
+  - 기존 품목 리스트 선택 → 새로운 TITLE로 복사 (최대 30개까지)
+
+- 👥 **인원 등록/관리**
+  - 전체 인원 엑셀 업로드 → 기존 데이터 삭제 후 등록  
+  - 인원 추가 업로드 (기존 유지)  
+  - 인원 삭제 기능
+
+- 📊 **신청/미신청 확인**
+  - 현재 신청 상태 엑셀로 다운로드
+
+- 🧪 **테스트용 인원 등록**
+  - 신청 기간과 무관하게 언제든 신청 가능
+
+---
+
+## 📎 기타 참고
+
+- 모든 엑셀 포맷은 표준 양식 기반이며, 업로드 시 유효성 검사 포함
+- 관리자 계정 `관리자ID`은 항상 유지되며 삭제되지 않음
+- 초기 로딩 최적화를 위한 **RSC + Hydration 전략 적용**
+
