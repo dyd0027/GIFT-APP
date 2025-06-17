@@ -1,4 +1,5 @@
 import UserAppendForm from '@/components/admin/user/UserAppendForm';
+import UserInsertForm from '@/components/admin/user/UserInsertForm';
 import UserUploadForm from '@/components/admin/user/UserUploadForm';
 
 const UserPage = () => {
@@ -6,6 +7,7 @@ const UserPage = () => {
     <div className="flex flex-col gap-[10px]">
       <UserUploadForm />
       <UserAppendForm />
+      <UserInsertForm />
     </div>
   );
 };
