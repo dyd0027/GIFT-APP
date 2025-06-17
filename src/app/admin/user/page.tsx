@@ -1,5 +1,5 @@
-import UserAppendForm from '@/components/UserAppendForm';
-import UserUploadForm from '@/components/UserUploadForm';
+import UserAppendForm from '@/components/admin/user/UserAppendForm';
+import UserUploadForm from '@/components/admin/user/UserUploadForm';
 
 const UserPage = () => {
   return (

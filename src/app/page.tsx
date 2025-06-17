@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers';
 
-import LoginForm from './LoginForm';
-import MainForm from './MainForm';
+import LoginForm from '../components/main/LoginForm';
+import MainForm from '../components/main/MainForm';
 
 import { verifyToken } from '@/lib/auth';
 
