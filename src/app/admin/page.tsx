@@ -1,14 +1,14 @@
-import Link from 'next/link';
+'use client';
+
+import Button from '@/components/common/Button';
+import { useRouter } from 'next/navigation';
 
 const AdminPage = () => {
+  const router = useRouter();
   return (
-    <div>
-      <Link href="/admin/user" className="block px-4 py-2 hover:bg-indigo-100">
-        유저 등록 및 관리
-      </Link>
-      <Link href="/admin/gift" className="block px-4 py-2 hover:bg-indigo-100">
-        선물 관리
-      </Link>
+    <div className="flex flex-col gap-[10px]">
+      <Button onClick={() => router.push('/admin/user')} label="유저 등록 및 관리" />
+      <Button onClick={() => router.push('/admin/gift')} label="선물 관리" />
     </div>
   );
 };

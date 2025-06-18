@@ -1,5 +1,6 @@
 'use client';
 
+import AsyncButton from '@/components/common/AsyncButton';
 import { useState } from 'react';
 
 const UserInsertForm = () => {
@@ -103,12 +104,7 @@ const UserInsertForm = () => {
         />
       </div>
 
-      <button
-        onClick={handleSubmit}
-        className="rounded bg-[#2FCBC0] px-4 py-2 text-white hover:bg-[#00B0AD]"
-      >
-        등록하기
-      </button>
+      <AsyncButton handleSubmit={handleSubmit} label="등록하기" />
     </div>
   );
 };

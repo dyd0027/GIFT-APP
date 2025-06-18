@@ -2,8 +2,9 @@
 
 import { useRef, useState } from 'react';
 import { parseExcelFile } from '@/utils/parseExcel';
+import AsyncButton from '@/components/common/AsyncButton';
 
-export default function UserUploadForm() {
+export default function UserAllUploadForm() {
   const [file, setFile] = useState<File | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -17,7 +18,7 @@ export default function UserUploadForm() {
 
     const result = await parseExcelFile(file);
     if (typeof result === 'string') return alert(result); // 에러 메시지 처리
-    const res = await fetch('/api/admin/user/replace', {
+    const res = await fetch('/api/admin/user/all', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ users: result }),
@@ -39,12 +40,7 @@ export default function UserUploadForm() {
           onChange={handleFileChange}
           className="w-[70%] flex-1"
         />
-        <button
-          onClick={handleUpload}
-          className="rounded bg-[#2FCBC0] px-4 py-2 text-white hover:bg-[#00B0AD]"
-        >
-          업로드
-        </button>
+        <AsyncButton handleSubmit={handleUpload} label="업로드" />
       </div>
     </div>
   );
