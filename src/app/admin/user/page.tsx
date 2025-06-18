@@ -4,7 +4,7 @@ import UserUploadForm from '@/components/admin/user/UserUploadForm';
 
 const UserPage = () => {
   return (
-    <div className="flex flex-col gap-[10px]">
+    <div className="flex flex-col gap-[10px] px-[10px]">
       <UserUploadForm />
       <UserAppendForm />
       <UserInsertForm />
