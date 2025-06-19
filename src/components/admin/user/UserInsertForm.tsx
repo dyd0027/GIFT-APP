@@ -38,7 +38,9 @@ const UserInsertForm = () => {
     if (!phone) return alert('전화번호를 입력해주세요.');
     if (!form.name) return alert('이름을 입력해주세요.');
     if (!/^\d{10,11}$/.test(phone)) return alert('전화번호 형식이 올바르지 않습니다.');
-
+    if (!confirm('업로드 하시겠습니까?')) {
+      return;
+    }
     const res = await fetch('/api/admin/user/insert', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

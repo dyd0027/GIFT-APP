@@ -16,7 +16,9 @@ const UserAppendForm = () => {
 
   const handleUpload = async () => {
     if (!file) return alert('엑셀 파일을 선택해주세요.');
-
+    if (!confirm('업로드 하시겠습니까?')) {
+      return;
+    }
     const result = await parseExcelFile(file);
     if (typeof result === 'string') return alert(result); // 에러 메시지 처리
 
