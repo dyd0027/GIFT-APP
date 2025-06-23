@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 const AdminPage = () => {
   const router = useRouter();
   return (
-    <div className="flex flex-col gap-[10px]">
+    <div className="flex h-full flex-1 flex-col justify-center gap-[10px] px-[10px]">
       <Button onClick={() => router.push('/admin/user')} label="유저 등록 및 관리" />
       <Button onClick={() => router.push('/admin/gift')} label="선물 관리" />
     </div>
