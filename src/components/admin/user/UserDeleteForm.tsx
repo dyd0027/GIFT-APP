@@ -72,6 +72,7 @@ const UserDeleteForm = () => {
           inputMode="numeric"
           className="rounded border p-2"
           maxLength={13}
+          autoComplete="tel"
         />
         <input
           name="name"
@@ -79,6 +80,7 @@ const UserDeleteForm = () => {
           onChange={handleChange}
           placeholder="이름"
           className="rounded border p-2"
+          autoComplete="name"
         />
       </div>
 

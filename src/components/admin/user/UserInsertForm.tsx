@@ -75,6 +75,7 @@ const UserInsertForm = () => {
           inputMode="numeric"
           className="rounded border p-2"
           maxLength={13}
+          autoComplete="tel"
         />
         <input
           name="name"
@@ -82,6 +83,7 @@ const UserInsertForm = () => {
           onChange={handleChange}
           placeholder="이름"
           className="rounded border p-2"
+          autoComplete="name"
         />
         <input
           name="company"
@@ -89,6 +91,7 @@ const UserInsertForm = () => {
           onChange={handleChange}
           placeholder="회사명"
           className="rounded border p-2"
+          autoComplete="organization"
         />
         <input
           name="hq"
