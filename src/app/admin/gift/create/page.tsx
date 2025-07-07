@@ -1,11 +1,19 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import AsyncButton from '@/components/common/AsyncButton';
 import Button from '@/components/common/Button';
+
+interface ProductDetail {
+  id: number;
+  detailNm: string;
+  detail: string;
+  imageFile: File | null;
+  previewUrl: string | null;
+}
 
 const CreateGiftPage = () => {
   const [productNm, setProductNm] = useState('');
@@ -14,21 +22,54 @@ const CreateGiftPage = () => {
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [deliveryDate, setDeliveryDate] = useState<Date | null>(null);
 
-  const [detailNm, setDetailNm] = useState('');
-  const [detail, setDetail] = useState('');
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [details, setDetails] = useState<ProductDetail[]>([
+    {
+      id: 0,
+      detailNm: '',
+      detail: '',
+      imageFile: null,
+      previewUrl: null,
+    },
+  ]);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImageFile(file);
-      const reader = new FileReader();
-      reader.onload = () => {
-        setPreviewUrl(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
+  const addProductDetail = () => {
+    setDetails((prev) => [
+      ...prev,
+      {
+        id: details.length,
+        detailNm: '',
+        detail: '',
+        imageFile: null,
+        previewUrl: null,
+      },
+    ]);
+  };
+
+  const removeProductDetail = (id: number) => {
+    setDetails((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  const handleDetailChange = (id: number, key: keyof ProductDetail, value: any) => {
+    setDetails((prev) => prev.map((item) => (item.id === id ? { ...item, [key]: value } : item)));
+  };
+
+  const handleImageChange = (id: number, file: File | null) => {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      setDetails((prev) =>
+        prev.map((item) =>
+          item.id === id
+            ? {
+                ...item,
+                imageFile: file,
+                previewUrl: reader.result as string,
+              }
+            : item
+        )
+      );
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSubmit = async () => {
@@ -37,28 +78,9 @@ const CreateGiftPage = () => {
       return;
     }
 
-    const format = (d: Date, f: string) =>
-      f === 'YYYYMMDD'
-        ? d.toISOString().slice(0, 10).replace(/-/g, '')
-        : f === 'YYYYMM'
-          ? d.toISOString().slice(0, 7).replace('-', '')
-          : '';
-
-    try {
-      const res = await axios.post('/api/admin/gift/create', {
-        PRODUCT_NM: productNm,
-        PRODUCT_STDT: format(startDate, 'YYYYMMDD'),
-        PRODUCT_EDDT: format(endDate, 'YYYYMMDD'),
-        DELIVERY_DT: deliveryDt,
-      });
-
-      alert('등록되었습니다.');
-    } catch (error) {
-      console.error(error);
-      alert('업로드 중 오류가 발생했습니다.');
-    }
+    // TODO: FormData를 사용하여 detail 이미지와 정보까지 같이 업로드할 수 있도록 확장
+    alert('등록 로직은 개발 중입니다.');
   };
-
   return (
     <div className="mt-[10px] flex w-full flex-col px-[10px]">
       <div className="flex flex-col gap-2">
@@ -72,7 +94,6 @@ const CreateGiftPage = () => {
             showMonthYearPicker
           />
         </div>
-
         <div className="flex items-center">
           <div className="!w-[100px]">신청기간</div>
           <DatePicker
@@ -97,50 +118,65 @@ const CreateGiftPage = () => {
             value={productNm}
             onChange={(e) => setProductNm(e.target.value)}
             className="flex-1 rounded border p-2"
-            name="productNm"
           />
         </div>
+
         <div className="flex w-full justify-center font-bold">상품 추가(1개 이상)</div>
-        <div className="flexflex-col flex flex-col items-center gap-[10px] rounded-md border-2 border-solid border-[#c2c2c2] p-[10px]">
-          <div className="flex w-full items-center">
-            <div className="!w-[100px]">상세 이름</div>
-            <input
-              type="text"
-              placeholder="ex) 벽제갈비 선물세트"
-              value={detailNm}
-              onChange={(e) => setDetailNm(e.target.value)}
-              className="flex-1 rounded border p-2"
-              name="detailNm"
-            />
-          </div>
-          <div className="flex w-full items-center">
-            <div className="!w-[100px]">상세 품목</div>
-            <textarea
-              placeholder="ex) 총 1.75kg(특대사이즈 14마리 내외)"
-              value={detail}
-              onChange={(e) => setDetail(e.target.value)}
-              className="w-[213px] flex-1 rounded border p-2"
-              name="datail"
-            />
-          </div>
-          <div className="flex w-full items-start gap-4">
-            <div className="!w-[100px] pt-2">이미지 등록</div>
-            <div className="flex flex-col gap-2">
-              <input type="file" accept="image/*" onChange={handleImageChange} />
-              {previewUrl && (
-                <img src={previewUrl} alt="미리보기" className="mt-2 w-auto rounded border" />
-              )}
+        {details.map((item, idx) => (
+          <div
+            key={item.id}
+            className="flexflex-col flex flex-col items-center gap-[10px] rounded-md border-2 border-solid border-[#c2c2c2] p-[10px]"
+          >
+            <div className="flex w-full items-center">
+              <div className="!w-[100px]">상세 이름</div>
+              <input
+                type="text"
+                value={item.detailNm}
+                onChange={(e) => handleDetailChange(item.id, 'detailNm', e.target.value)}
+                className="flex-1 rounded border p-2"
+              />
             </div>
+            <div className="flex w-full items-center">
+              <div className="!w-[100px]">상세 품목</div>
+              <textarea
+                value={item.detail}
+                onChange={(e) => handleDetailChange(item.id, 'detail', e.target.value)}
+                className="w-[213px] flex-1 rounded border p-2"
+              />
+            </div>
+            <div className="flex w-full items-start gap-4">
+              <div className="!w-[100px] pt-2">이미지 등록</div>
+              <div className="flex flex-1 flex-col gap-2">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleImageChange(item.id, e.target.files?.[0] || null)}
+                />
+                {item.previewUrl && (
+                  <img src={item.previewUrl} alt="미리보기" className="mt-2 rounded border" />
+                )}
+              </div>
+            </div>
+            {idx !== 0 && (
+              <div className="w-full text-right">
+                <Button
+                  label="삭제"
+                  onClick={() => removeProductDetail(item.id)}
+                  className="w-[80px] bg-red-600 text-white hover:bg-red-700"
+                />
+              </div>
+            )}
           </div>
-        </div>
+        ))}
         <div>
-          <Button label="상품 추가" onClick={() => null} className="float-right w-[120px]" />
+          <Button label="상품 추가" onClick={addProductDetail} className="float-right w-[120px]" />
         </div>
+
         <div className="flex items-center">
           <div className="!w-[100px]">수령일 안내</div>
           <textarea
             placeholder="~~"
-            value={productNm}
+            value={deliveryDt}
             onChange={(e) => setDeliveryDt(e.target.value)}
             className="w-[213px] flex-1 rounded border p-2"
             name="DELIVERY_DT"
