@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
     const { phone, name } = await req.json();
     const purePhone = phone.replace(/[^0-9]/g, '');
 
-    const exists = await prisma.p2021_user_m.findUnique({
+    const exists = await prisma.user_m.findUnique({
       where: { LOGIN_ID: purePhone, LOGIN_NM: name },
     });
 
@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: '존재하지 않는 계정입니다.' }, { status: 409 });
     }
 
-    await prisma.p2021_user_m.delete({
+    await prisma.user_m.delete({
       where: {
         LOGIN_ID: purePhone,
         LOGIN_NM: name,

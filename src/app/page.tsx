@@ -19,7 +19,7 @@ const HomePage = () => {
       console.error('Invalid token:', err);
     }
   }
-  return <main>{isLoggedIn ? <MainForm /> : <LoginForm />}</main>;
+  return <>{isLoggedIn ? <MainForm /> : <LoginForm />}</>;
 };
 
 export default HomePage;

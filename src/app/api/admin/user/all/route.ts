@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     const ADMIN_ID = 'sangsangin';
 
     const result = await prisma.$transaction(async (tx) => {
-      await tx.p2021_user_m.deleteMany({ where: { NOT: { LOGIN_ID: ADMIN_ID } } });
+      await tx.user_m.deleteMany({ where: { NOT: { LOGIN_ID: ADMIN_ID } } });
 
       const insertData = users.map((item, idx) => {
         const phone = String(item.phone ?? '').trim();
@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
         throw new Error(errors.join('\n'));
       }
 
-      await tx.p2021_user_m.createMany({ data: insertData });
+      await tx.user_m.createMany({ data: insertData });
     });
 
     return NextResponse.json({ message: '업로드 성공' });

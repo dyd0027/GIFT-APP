@@ -8,6 +8,50 @@ datasource db {
 }
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model delivery_addr_m {
+  PRODUCT_SEQ          String    @db.VarChar(20)
+  EMP_KEY_TELNO        String?   @db.VarChar(200)
+  EMP_NM               String?   @db.VarChar(200)
+  EMP_TELNO            String?   @db.VarChar(200)
+  EMP_COMP_NM          String?   @db.VarChar(200)
+  EMP_HQ_NM            String?   @db.VarChar(200)
+  EMP_DEPT_NM          String?   @db.VarChar(200)
+  PRODUCT_SEL_TYPE     String?   @db.VarChar(500)
+  DELIVERY_NM          String    @db.VarChar(200)
+  DELIVERY_TELNO       String?   @db.VarChar(200)
+  DELIVERY_POSTCODE    String?   @db.VarChar(200)
+  DELIVERY_ADDR        String?   @db.VarChar(200)
+  DELIVERY_DETAIL_ADDR String?   @db.VarChar(400)
+  REG_DTTM             DateTime?
+  UPD_DTTM             DateTime?
+  D_C_NM               String?   @db.VarChar(50)
+  D_C_CD               String?   @db.VarChar(50)
+  D_HOPE_DT            String?   @db.VarChar(20)
+
+  @@unique([PRODUCT_SEQ, EMP_KEY_TELNO], map: "uq_delivery")
+  @@ignore
+}
+
+model product_m {
+  SEQ          String    @id @db.VarChar(10)
+  PRODUCT_NM   String    @db.VarChar(100)
+  PRODUCT_STDT String    @db.VarChar(14)
+  PRODUCT_EDDT String    @db.VarChar(14)
+  DELIVERY_DT  String    @db.VarChar(5000)
+  REG_DTTM     DateTime?
+  PROGRESS_YN  String    @default("") @db.Char(1)
+}
+
+model user_m {
+  LOGIN_ID String   @id @db.VarChar(20)
+  LOGIN_NM String   @db.VarChar(50)
+  COMP_NM  String?  @db.VarChar(100)
+  HQ_NM    String?  @db.VarChar(100)
+  DEPT_NM  String?  @db.VarChar(100)
+  REG_DTTM DateTime @default(now())
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model p2021_delivery_addr_m {
   PRODUCT_SEQ          String    @db.VarChar(20)
   EMP_KEY_TELNO        String?   @db.VarChar(200)
@@ -46,7 +90,7 @@ model p2021_product_m {
   PRODUCT_NM   String    @db.VarChar(100)
   PRODUCT_STDT String    @db.VarChar(14)
   PRODUCT_EDDT String    @db.VarChar(14)
-  DELIVERY_DT  String    @db.VarChar(8)
+  DELIVERY_DT  String    @db.VarChar(5000)
   REG_DTTM     DateTime?
   PROGRESS_YN  String    @default("") @db.Char(1)
 }

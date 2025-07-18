@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
   try {
     const { LOGIN_ID, LOGIN_NM } = await req.json();
 
-    const user = await prisma.p2021_user_m.findUnique({
+    const user = await prisma.user_m.findUnique({
       where: { LOGIN_ID, LOGIN_NM },
     });
 

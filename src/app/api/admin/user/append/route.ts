@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
       DEPT_NM: user.dept ?? '',
     }));
 
-    await prisma.p2021_user_m.createMany({ data, skipDuplicates: true });
+    await prisma.user_m.createMany({ data, skipDuplicates: true });
 
     return NextResponse.json({ message: '추가 업로드 성공' });
   } catch (err: any) {
