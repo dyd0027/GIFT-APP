@@ -33,13 +33,13 @@ model delivery_addr_m {
 }
 
 model product_m {
-  SEQ          String    @id @db.VarChar(10)
-  PRODUCT_NM   String    @db.VarChar(100)
-  PRODUCT_STDT String    @db.VarChar(14)
-  PRODUCT_EDDT String    @db.VarChar(14)
-  DELIVERY_DT  String    @db.VarChar(5000)
+  SEQ          String        @id @db.VarChar(10)
+  PRODUCT_NM   String        @db.VarChar(100)
+  PRODUCT_STDT String        @db.VarChar(14)
+  PRODUCT_EDDT String        @db.VarChar(14)
   REG_DTTM     DateTime?
-  PROGRESS_YN  String    @default("") @db.Char(1)
+  PROGRESS_YN  String        @default("") @db.Char(1)
+  product_sub  product_sub[]
 }
 
 model user_m {
@@ -111,4 +111,28 @@ model p2021_user_m {
   HQ_NM    String?  @db.VarChar(100)
   DEPT_NM  String?  @db.VarChar(100)
   REG_DTTM DateTime @default(now())
+}
+
+model choice_store {
+  seq            Int?
+  product_sub_id Int         @id
+  region         String?     @db.VarChar(255)
+  address        String?     @db.VarChar(1000)
+  product_sub    product_sub @relation(fields: [product_sub_id], references: [id], onDelete: Cascade, map: "fk_product_sub_id")
+}
+
+model product_sub {
+  id           Int           @id @default(autoincrement())
+  product_seq  String        @db.VarChar(10)
+  detailNm     String        @db.VarChar(255)
+  detail       String?       @db.Text
+  imageFile    String?       @db.VarChar(500)
+  sub_sort     Int?          @default(0)
+  date_list    String?       @db.VarChar(100)
+  repalce_id   Int?
+  add_detail   String?       @db.Text
+  choice_store choice_store?
+  product_m    product_m     @relation(fields: [product_seq], references: [SEQ], onDelete: Cascade, map: "fk_product_sub_product_seq")
+
+  @@index([product_seq], map: "fk_product_sub_product_seq")
 }

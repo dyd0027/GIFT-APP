@@ -53,3 +53,18 @@ CREATE TABLE product_sub (
         ON DELETE CASCADE
         ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+ALTER TABLE product_sub ADD COLUMN `date_list` VARCHAR(100);
+ALTER TABLE product_sub ADD COLUMN `repalce_id` INT;
+ALTER TABLE product_sub ADD COLUMN `add_detail` TEXT;
+
+
+CREATE TABLE choice_store (
+    seq INT AUTO_INCREMENT PRIMARY KEY,
+    product_sub_id VARCHAR(10) NOT NULL,
+    region VARCHAR(255) NOT NULL,
+    address VARCHAR(1000),
+    CONSTRAINT fk_product_sub_product_id FOREIGN KEY (product_sub_id)
+        REFERENCES product_sub(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
