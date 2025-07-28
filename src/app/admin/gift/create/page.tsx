@@ -13,6 +13,8 @@ interface ProductDetail {
   detail: string;
   imageFile: File | null;
   previewUrl: string | null;
+  subSort: number;
+  dateList: string[];
 }
 
 const CreateGiftPage = () => {
@@ -21,6 +23,7 @@ const CreateGiftPage = () => {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [deliveryDate, setDeliveryDate] = useState<Date | null>(null);
+  const [selectedDate, setSelectedDate] = useState<{ [key: number]: Date | null }>({});
 
   const [details, setDetails] = useState<ProductDetail[]>([
     {
@@ -29,6 +32,8 @@ const CreateGiftPage = () => {
       detail: '',
       imageFile: null,
       previewUrl: null,
+      subSort: 0,
+      dateList: [],
     },
   ]);
 
@@ -41,8 +46,16 @@ const CreateGiftPage = () => {
         detail: '',
         imageFile: null,
         previewUrl: null,
+        subSort: details.length,
+        dateList: [],
       },
     ]);
+  };
+  const formatDate = (date: Date) => {
+    const yyyy = date.getFullYear().toString();
+    const mm = (date.getMonth() + 1).toString().padStart(2, '0');
+    const dd = date.getDate().toString().padStart(2, '0');
+    return `${yyyy}${mm}${dd}`;
   };
 
   const removeProductDetail = (id: number) => {
@@ -125,7 +138,7 @@ const CreateGiftPage = () => {
         {details.map((item, idx) => (
           <div
             key={item.id}
-            className="flexflex-col flex flex-col items-center gap-[10px] rounded-md border-2 border-solid border-[#c2c2c2] p-[10px]"
+            className="flex flex-col items-center gap-[10px] rounded-md border-2 border-solid border-[#c2c2c2] p-[10px]"
           >
             <div className="flex w-full items-center">
               <div className="!w-[100px]">상세 이름</div>
@@ -144,6 +157,59 @@ const CreateGiftPage = () => {
                 className="w-[213px] flex-1 rounded border p-2"
               />
             </div>
+            <div className="flex w-full items-center">
+              <div className="!w-[100px]">신청 날짜</div>
+              <DatePicker
+                selected={null}
+                onChange={(date: Date | null) => {
+                  if (!date) return;
+                  const formatted = formatDate(date);
+
+                  setDetails((prev) =>
+                    prev.map((i) =>
+                      i.id === item.id
+                        ? {
+                            ...i,
+                            dateList: Array.from(new Set([...i.dateList, formatted])).sort(),
+                          }
+                        : i
+                    )
+                  );
+                  setSelectedDate((prev) => ({ ...prev, [item.id]: date }));
+                }}
+                dateFormat="yyyy/MM/dd"
+                className="w-[120px] cursor-pointer rounded-md border p-2"
+              />
+            </div>
+            <div className="flex w-full items-center gap-2">
+              {item.dateList.length > 0 && <div className="!w-[100px]">선택된 날짜</div>}
+              <div className="inline-block flex-1">
+                {item.dateList.map((dateStr) => (
+                  <div
+                    key={dateStr}
+                    className="m-[3px] inline-flex items-center gap-1 rounded-full bg-[#2FCBC0] px-3 py-1 text-sm text-white"
+                  >
+                    {dateStr}
+                    <button
+                      type="button"
+                      className="ml-1 text-white hover:text-red-500"
+                      onClick={() => {
+                        setDetails((prev) =>
+                          prev.map((i) =>
+                            i.id === item.id
+                              ? { ...i, dateList: i.dateList.filter((d) => d !== dateStr) }
+                              : i
+                          )
+                        );
+                      }}
+                    >
+                      X
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             <div className="flex w-full items-start gap-4">
               <div className="!w-[100px] pt-2">이미지 등록</div>
               <div className="flex flex-1 flex-col gap-2">
