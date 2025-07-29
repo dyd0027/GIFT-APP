@@ -16,6 +16,8 @@ interface ProductDetail {
   previewUrl: string | null;
   subSort: number;
   dateList: string[];
+  isReplaceable: boolean;
+  replaceId: number | null;
 }
 
 const CreateGiftPage = () => {
@@ -35,6 +37,8 @@ const CreateGiftPage = () => {
       previewUrl: null,
       subSort: 0,
       dateList: [],
+      isReplaceable: false,
+      replaceId: null,
     },
   ]);
 
@@ -50,6 +54,8 @@ const CreateGiftPage = () => {
         previewUrl: null,
         subSort: details.length,
         dateList: [],
+        isReplaceable: false,
+        replaceId: null,
       },
     ]);
   };
@@ -255,6 +261,58 @@ const CreateGiftPage = () => {
                 />
               </div>
             )}
+            <div className="flex w-full items-center">
+              <div className="!w-[100px]">대체상품</div>
+              <div>
+                <select
+                  value={item.isReplaceable ? 'Y' : 'N'}
+                  onChange={(e) => {
+                    const value = e.target.value === 'Y';
+                    setDetails((prev) =>
+                      prev.map((i) =>
+                        i.id === item.id
+                          ? {
+                              ...i,
+                              isReplaceable: value,
+                              replaceId: value ? i.replaceId : null,
+                            }
+                          : i
+                      )
+                    );
+                  }}
+                  className="w-[100px] rounded border p-2"
+                >
+                  <option value="N">N</option>
+                  <option value="Y">Y</option>
+                </select>
+                {item.isReplaceable && (
+                  <div className="flex w-full items-center">
+                    <div className="!w-[120px]">
+                      대체상품 선택<span className="text-[red]">*</span>
+                    </div>
+                    <select
+                      value={item.replaceId ?? ''}
+                      onChange={(e) => {
+                        const selectedId = Number(e.target.value);
+                        setDetails((prev) =>
+                          prev.map((i) => (i.id === item.id ? { ...i, replaceId: selectedId } : i))
+                        );
+                      }}
+                      className="flex-1 rounded border p-2"
+                    >
+                      <option value="">선택 안함</option>
+                      {details
+                        .filter((other) => other.id !== item.id)
+                        .map((option) => (
+                          <option key={option.id} value={option.id}>
+                            {option.detailNm || `상품 ${option.id}`}
+                          </option>
+                        ))}
+                    </select>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         ))}
         <div>
