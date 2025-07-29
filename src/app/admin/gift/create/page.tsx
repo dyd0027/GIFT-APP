@@ -11,6 +11,7 @@ interface ProductDetail {
   id: number;
   detailNm: string;
   detail: string;
+  addDetail: string;
   imageFile: File | null;
   previewUrl: string | null;
   subSort: number;
@@ -23,13 +24,13 @@ const CreateGiftPage = () => {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [deliveryDate, setDeliveryDate] = useState<Date | null>(null);
-  const [selectedDate, setSelectedDate] = useState<{ [key: number]: Date | null }>({});
 
   const [details, setDetails] = useState<ProductDetail[]>([
     {
       id: 0,
       detailNm: '',
       detail: '',
+      addDetail: '',
       imageFile: null,
       previewUrl: null,
       subSort: 0,
@@ -44,6 +45,7 @@ const CreateGiftPage = () => {
         id: details.length,
         detailNm: '',
         detail: '',
+        addDetail: '',
         imageFile: null,
         previewUrl: null,
         subSort: details.length,
@@ -98,7 +100,9 @@ const CreateGiftPage = () => {
     <div className="mt-[10px] flex w-full flex-col px-[10px]">
       <div className="flex flex-col gap-2">
         <div className="flex items-center">
-          <div className="!w-[100px]">선물 년/월</div>
+          <div className="!w-[100px]">
+            선물 년/월<span className="text-[red]">*</span>
+          </div>
           <DatePicker
             selected={deliveryDate}
             onChange={(date) => setDeliveryDate(date)}
@@ -108,7 +112,9 @@ const CreateGiftPage = () => {
           />
         </div>
         <div className="flex items-center">
-          <div className="!w-[100px]">신청기간</div>
+          <div className="!w-[100px]">
+            신청기간<span className="text-[red]">*</span>
+          </div>
           <DatePicker
             selected={startDate}
             onChange={(date) => setStartDate(date)}
@@ -124,7 +130,9 @@ const CreateGiftPage = () => {
           />
         </div>
         <div className="flex items-center">
-          <div className="!w-[100px]">선물명</div>
+          <div className="!w-[100px]">
+            선물명<span className="text-[red]">*</span>
+          </div>
           <input
             type="text"
             placeholder="선물명"
@@ -141,7 +149,9 @@ const CreateGiftPage = () => {
             className="flex flex-col items-center gap-[10px] rounded-md border-2 border-solid border-[#c2c2c2] p-[10px]"
           >
             <div className="flex w-full items-center">
-              <div className="!w-[100px]">상세 이름</div>
+              <div className="!w-[100px]">
+                상세 이름<span className="text-[red]">*</span>
+              </div>
               <input
                 type="text"
                 value={item.detailNm}
@@ -150,7 +160,9 @@ const CreateGiftPage = () => {
               />
             </div>
             <div className="flex w-full items-center">
-              <div className="!w-[100px]">상세 품목</div>
+              <div className="!w-[100px]">
+                상세 품목<span className="text-[red]">*</span>
+              </div>
               <textarea
                 value={item.detail}
                 onChange={(e) => handleDetailChange(item.id, 'detail', e.target.value)}
@@ -158,7 +170,17 @@ const CreateGiftPage = () => {
               />
             </div>
             <div className="flex w-full items-center">
-              <div className="!w-[100px]">신청 날짜</div>
+              <div className="!w-[100px]">추가 문구</div>
+              <textarea
+                value={item.addDetail}
+                onChange={(e) => handleDetailChange(item.id, 'addDetail', e.target.value)}
+                className="w-[213px] flex-1 rounded border p-2"
+              />
+            </div>
+            <div className="flex w-full items-center">
+              <div className="!w-[100px]">
+                배송 날짜<span className="text-[red]">*</span>
+              </div>
               <DatePicker
                 selected={null}
                 onChange={(date: Date | null) => {
@@ -175,7 +197,6 @@ const CreateGiftPage = () => {
                         : i
                     )
                   );
-                  setSelectedDate((prev) => ({ ...prev, [item.id]: date }));
                 }}
                 dateFormat="yyyy/MM/dd"
                 className="w-[120px] cursor-pointer rounded-md border p-2"
@@ -211,7 +232,9 @@ const CreateGiftPage = () => {
             </div>
 
             <div className="flex w-full items-start gap-4">
-              <div className="!w-[100px] pt-2">이미지 등록</div>
+              <div className="!w-[100px] pt-2">
+                이미지 등록<span className="text-[red]">*</span>
+              </div>
               <div className="flex flex-1 flex-col gap-2">
                 <input
                   type="file"
