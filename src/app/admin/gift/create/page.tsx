@@ -113,6 +113,10 @@ const CreateGiftPage = () => {
     // TODO: FormData를 사용하여 detail 이미지와 정보까지 같이 업로드할 수 있도록 확장
     alert('등록 로직은 개발 중입니다.');
   };
+
+  useEffect(() => {
+    console.log(deliveryDt);
+  }, [deliveryDt]);
   return (
     <div className="mt-[10px] flex w-full flex-col px-[10px]">
       <div className="flex flex-col gap-2">
@@ -431,11 +435,11 @@ const CreateGiftPage = () => {
         </div>
 
         <div className="flex">
-          <div className="!w-[100px]">
+          <div className="!w-[100px] pt-[10px]">
             수령일 안내<span className="text-[red]">*</span>
           </div>
           <div className="flex-1">
-            <TiptapEditor />
+            <TiptapEditor deliveryDt={deliveryDt} setDeliveryDt={setDeliveryDt} />
           </div>
         </div>
       </div>
