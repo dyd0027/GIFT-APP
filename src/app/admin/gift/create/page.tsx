@@ -6,6 +6,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import AsyncButton from '@/components/common/AsyncButton';
 import Button from '@/components/common/Button';
+import TiptapEditor from '@/components/common/TipTopEditor';
 interface StoreInfo {
   seq: number;
   region: string;
@@ -429,15 +430,13 @@ const CreateGiftPage = () => {
           <Button label="상품 추가" onClick={addProductDetail} className="float-right w-[120px]" />
         </div>
 
-        <div className="flex items-center">
-          <div className="!w-[100px]">수령일 안내</div>
-          <textarea
-            placeholder="~~"
-            value={deliveryDt}
-            onChange={(e) => setDeliveryDt(e.target.value)}
-            className="w-[213px] flex-1 rounded border p-2"
-            name="DELIVERY_DT"
-          />
+        <div className="flex">
+          <div className="!w-[100px]">
+            수령일 안내<span className="text-[red]">*</span>
+          </div>
+          <div className="flex-1">
+            <TiptapEditor />
+          </div>
         </div>
       </div>
       <AsyncButton handleSubmit={handleSubmit} label="등록" className="mt-[50px]" />

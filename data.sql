@@ -14,7 +14,6 @@ CREATE TABLE `product_m` (
   `PRODUCT_STDT` varchar(14) NOT NULL,
   `PRODUCT_EDDT` varchar(14) NOT NULL,
   `DELIVERY_DT` varchar(5000) NOT NULL,
-  `REG_DTTM` datetime(3) DEFAULT NULL,
   `PROGRESS_YN` char(1) NOT NULL DEFAULT '',
   PRIMARY KEY (`SEQ`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
