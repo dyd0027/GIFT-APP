@@ -33,6 +33,7 @@ const CreateGiftPage = () => {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [deliveryDate, setDeliveryDate] = useState<Date | null>(null);
+  const [isHtml, setIsHtml] = useState(true);
 
   const [details, setDetails] = useState<ProductDetail[]>([
     {
@@ -120,6 +121,13 @@ const CreateGiftPage = () => {
   return (
     <div className="mt-[10px] flex w-full flex-col px-[10px]">
       <div className="flex flex-col gap-2">
+        <div>
+          <Button
+            label={isHtml ? '미리보기' : '작성하기'}
+            onClick={() => setIsHtml((prev) => !prev)}
+            className="w-[120px]"
+          />
+        </div>
         <div className="flex items-center">
           <div className="!w-[100px]">
             선물 년/월<span className="text-[red]">*</span>

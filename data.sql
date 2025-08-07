@@ -18,28 +18,6 @@ CREATE TABLE `product_m` (
   PRIMARY KEY (`SEQ`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-CREATE TABLE `delivery_addr_m` (
-  `PRODUCT_SEQ` varchar(20) NOT NULL,
-  `EMP_KEY_TELNO` varchar(200) DEFAULT NULL,
-  `EMP_NM` varchar(200) DEFAULT NULL,
-  `EMP_TELNO` varchar(200) DEFAULT NULL,
-  `EMP_COMP_NM` varchar(200) DEFAULT NULL,
-  `EMP_HQ_NM` varchar(200) DEFAULT NULL,
-  `EMP_DEPT_NM` varchar(200) DEFAULT NULL,
-  `PRODUCT_SEL_TYPE` varchar(500) DEFAULT NULL,
-  `DELIVERY_NM` varchar(200) NOT NULL,
-  `DELIVERY_TELNO` varchar(200) DEFAULT NULL,
-  `DELIVERY_POSTCODE` varchar(200) DEFAULT NULL,
-  `DELIVERY_ADDR` varchar(200) DEFAULT NULL,
-  `DELIVERY_DETAIL_ADDR` varchar(400) DEFAULT NULL,
-  `REG_DTTM` datetime(3) DEFAULT NULL,
-  `UPD_DTTM` datetime(3) DEFAULT NULL,
-  `D_C_NM` varchar(50) DEFAULT NULL,
-  `D_C_CD` varchar(50) DEFAULT NULL,
-  `D_HOPE_DT` varchar(20) DEFAULT NULL,
-  UNIQUE KEY `uq_delivery` (`PRODUCT_SEQ`,`EMP_KEY_TELNO`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
 CREATE TABLE product_sub (
     id INT AUTO_INCREMENT PRIMARY KEY,
     product_seq VARCHAR(10) NOT NULL,
@@ -57,9 +35,37 @@ ALTER TABLE product_sub ADD COLUMN `repalce_id` INT;
 ALTER TABLE product_sub ADD COLUMN `add_detail` TEXT;
 
 
+CREATE TABLE `delivery_addr_m` (
+  `PRODUCT_SEQ` varchar(20) NOT NULL,
+  `EMP_KEY_TELNO` varchar(200) DEFAULT NULL,
+  `PRODUCT_SUB_ID` INT,
+  `EMP_NM` varchar(200) DEFAULT NULL,
+  `EMP_TELNO` varchar(200) DEFAULT NULL,
+  `EMP_COMP_NM` varchar(200) DEFAULT NULL,
+  `EMP_HQ_NM` varchar(200) DEFAULT NULL,
+  `EMP_DEPT_NM` varchar(200) DEFAULT NULL,
+  `DELIVERY_NM` varchar(200) NOT NULL,
+  `DELIVERY_TELNO` varchar(200) DEFAULT NULL,
+  `DELIVERY_POSTCODE` varchar(200) DEFAULT NULL,
+  `DELIVERY_ADDR` varchar(200) DEFAULT NULL,
+  `DELIVERY_DETAIL_ADDR` varchar(400) DEFAULT NULL,
+  `REG_DTTM` datetime(3) NOT NULL DEFAULT current_timestamp(3) ON UPDATE current_timestamp(3),
+  `UPD_DTTM` datetime(3) DEFAULT NULL,
+  `D_HOPE_DT` varchar(20) DEFAULT NULL,
+  UNIQUE KEY `uq_delivery` (`PRODUCT_SEQ`,`EMP_KEY_TELNO`),
+  CONSTRAINT fk_delivery_addr_product_seq FOREIGN KEY (PRODUCT_SEQ)
+        REFERENCES product_m(SEQ)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    CONSTRAINT fk_delivery_addr_product_sub_id FOREIGN KEY (product_sub_id)
+        REFERENCES product_sub(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE 
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 CREATE TABLE choice_store (
     seq INT AUTO_INCREMENT PRIMARY KEY,
-    product_sub_id VARCHAR(10) NOT NULL,
+    product_sub_id INT,
     region VARCHAR(255) NOT NULL,
     address VARCHAR(1000),
     CONSTRAINT fk_product_sub_product_id FOREIGN KEY (product_sub_id)
