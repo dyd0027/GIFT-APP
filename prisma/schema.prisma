@@ -7,48 +7,39 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model choice_store {
+  id             Int         @id @default(autoincrement())
+  product_sub_id Int
+  region         String?     @db.VarChar(255)
+  address        String?     @db.VarChar(1000)
+  product_sub    product_sub @relation(fields: [product_sub_id], references: [id], onDelete: Cascade, map: "fk_product_sub_id")
+
+  @@index([product_sub_id], map: "fk_choice_store_product_sub_id")
+}
+
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model delivery_addr_m {
-  PRODUCT_SEQ          String    @db.VarChar(20)
-  EMP_KEY_TELNO        String?   @db.VarChar(200)
-  EMP_NM               String?   @db.VarChar(200)
-  EMP_TELNO            String?   @db.VarChar(200)
-  EMP_COMP_NM          String?   @db.VarChar(200)
-  EMP_HQ_NM            String?   @db.VarChar(200)
-  EMP_DEPT_NM          String?   @db.VarChar(200)
-  PRODUCT_SEL_TYPE     String?   @db.VarChar(500)
-  DELIVERY_NM          String    @db.VarChar(200)
-  DELIVERY_TELNO       String?   @db.VarChar(200)
-  DELIVERY_POSTCODE    String?   @db.VarChar(200)
-  DELIVERY_ADDR        String?   @db.VarChar(200)
-  DELIVERY_DETAIL_ADDR String?   @db.VarChar(400)
-  REG_DTTM             DateTime?
+  PRODUCT_SEQ          Int          @default(0)
+  EMP_KEY_TELNO        String?      @db.VarChar(200)
+  PRODUCT_SUB_ID       Int?
+  EMP_NM               String?      @db.VarChar(200)
+  EMP_TELNO            String?      @db.VarChar(200)
+  EMP_COMP_NM          String?      @db.VarChar(200)
+  EMP_HQ_NM            String?      @db.VarChar(200)
+  EMP_DEPT_NM          String?      @db.VarChar(200)
+  DELIVERY_NM          String       @db.VarChar(200)
+  DELIVERY_TELNO       String?      @db.VarChar(200)
+  DELIVERY_POSTCODE    String?      @db.VarChar(200)
+  DELIVERY_ADDR        String?      @db.VarChar(200)
+  DELIVERY_DETAIL_ADDR String?      @db.VarChar(400)
+  REG_DTTM             DateTime?    @default(now())
   UPD_DTTM             DateTime?
-  D_C_NM               String?   @db.VarChar(50)
-  D_C_CD               String?   @db.VarChar(50)
-  D_HOPE_DT            String?   @db.VarChar(20)
+  D_HOPE_DT            String?      @db.VarChar(20)
+  product_m            product_m    @relation(fields: [PRODUCT_SEQ], references: [SEQ], onDelete: Cascade, map: "fk_delivery_addr_product_seq")
+  product_sub          product_sub? @relation(fields: [PRODUCT_SUB_ID], references: [id], onDelete: Cascade, map: "fk_delivery_addr_product_sub_id")
 
-  @@unique([PRODUCT_SEQ, EMP_KEY_TELNO], map: "uq_delivery")
+  @@index([PRODUCT_SEQ], map: "fk_delivery_addr_product_seq")
   @@ignore
-}
-
-model product_m {
-  SEQ          String        @id @db.VarChar(10)
-  PRODUCT_NM   String        @db.VarChar(100)
-  PRODUCT_STDT String        @db.VarChar(14)
-  PRODUCT_EDDT String        @db.VarChar(14)
-  REG_DTTM     DateTime?
-  PROGRESS_YN  String        @default("") @db.Char(1)
-  product_sub  product_sub[]
-}
-
-model user_m {
-  LOGIN_ID String   @id @db.VarChar(20)
-  LOGIN_NM String   @db.VarChar(50)
-  COMP_NM  String?  @db.VarChar(100)
-  HQ_NM    String?  @db.VarChar(100)
-  DEPT_NM  String?  @db.VarChar(100)
-  REG_DTTM DateTime @default(now())
 }
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
@@ -113,26 +104,39 @@ model p2021_user_m {
   REG_DTTM DateTime @default(now())
 }
 
-model choice_store {
-  seq            Int?
-  product_sub_id Int         @id
-  region         String?     @db.VarChar(255)
-  address        String?     @db.VarChar(1000)
-  product_sub    product_sub @relation(fields: [product_sub_id], references: [id], onDelete: Cascade, map: "fk_product_sub_id")
+model product_m {
+  SEQ             Int               @id @default(autoincrement())
+  PRODUCT_NM      String            @db.VarChar(100)
+  PRODUCT_DATE    String            @db.VarChar(100)
+  PRODUCT_STDT    String            @db.VarChar(14)
+  PRODUCT_EDDT    String            @db.VarChar(14)
+  DELIVERY_DT     String            @db.VarChar(5000)
+  delivery_addr_m delivery_addr_m[] @ignore
+  product_sub     product_sub[]
 }
 
 model product_sub {
-  id           Int           @id @default(autoincrement())
-  product_seq  String        @db.VarChar(10)
-  detailNm     String        @db.VarChar(255)
-  detail       String?       @db.Text
-  imageFile    String?       @db.VarChar(500)
-  sub_sort     Int?          @default(0)
-  date_list    String?       @db.VarChar(100)
-  repalce_id   Int?
-  add_detail   String?       @db.Text
-  choice_store choice_store?
-  product_m    product_m     @relation(fields: [product_seq], references: [SEQ], onDelete: Cascade, map: "fk_product_sub_product_seq")
+  id              Int               @id @default(autoincrement())
+  product_seq     Int
+  detailNm        String            @db.VarChar(255)
+  detail          String?           @db.Text
+  imageFile       String?           @db.VarChar(500)
+  sub_sort        Int?              @default(0)
+  date_list       String?           @db.VarChar(500)
+  replace_id      Int?
+  add_detail      String?           @db.Text
+  choice_store    choice_store[]
+  delivery_addr_m delivery_addr_m[] @ignore
+  product_m       product_m         @relation(fields: [product_seq], references: [SEQ], onDelete: Cascade, map: "fk_product_sub_product_seq")
 
   @@index([product_seq], map: "fk_product_sub_product_seq")
+}
+
+model user_m {
+  LOGIN_ID String   @id @db.VarChar(20)
+  LOGIN_NM String   @db.VarChar(50)
+  COMP_NM  String?  @db.VarChar(100)
+  HQ_NM    String?  @db.VarChar(100)
+  DEPT_NM  String?  @db.VarChar(100)
+  REG_DTTM DateTime @default(now())
 }

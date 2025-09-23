@@ -7,6 +7,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import AsyncButton from '@/components/common/AsyncButton';
 import Button from '@/components/common/Button';
 import TiptapEditor from '@/components/common/TipTopEditor';
+import { createGift } from '@/lib/api';
 interface StoreInfo {
   seq: number;
   region: string;
@@ -106,13 +107,41 @@ const CreateGiftPage = () => {
   };
 
   const handleSubmit = async () => {
-    if (!productNm || !startDate || !endDate || !deliveryDate) {
-      alert('모든 값을 입력해주세요');
+    if (!productNm || !startDate || !endDate || !deliveryDate || !deliveryDt) {
+      alert('필수 값을 입력해주세요.');
+      return;
+    }
+    if (endDate <= startDate) {
+      alert('신청 시작날짜는 종료날짜보다 작아야 합니다.');
+      return;
+    }
+    const hasInvalidDetail = details.some((d) => !d.detailNm || !d.detail || !d.imageFile);
+    if (hasInvalidDetail) {
+      alert('상세 품목 필수 값을 입력해주세요.');
       return;
     }
 
-    // TODO: FormData를 사용하여 detail 이미지와 정보까지 같이 업로드할 수 있도록 확장
-    alert('등록 로직은 개발 중입니다.');
+    try {
+      const res = await createGift({
+        product: {
+          productNm,
+          startDate: startDate!.toISOString(),
+          endDate: endDate!.toISOString(),
+          deliveryDate: deliveryDate!.toISOString(),
+          deliveryDt,
+        },
+        details,
+      });
+
+      if (res.ok) {
+        alert('등록되었습니다.');
+      } else {
+        alert(`등록 실패: ${res.message ?? '알 수 없는 오류'}`);
+      }
+    } catch (e: any) {
+      console.error(e);
+      alert(e?.message ?? '에러가 발생했습니다.');
+    }
   };
 
   useEffect(() => {
@@ -207,9 +236,7 @@ const CreateGiftPage = () => {
               />
             </div>
             <div className="flex w-full">
-              <div className="!w-[100px]">
-                배송 일<span className="text-[red]">*</span>
-              </div>
+              <div className="!w-[100px]">배송 일</div>
               <div className="flex-1">
                 <DatePicker
                   selected={null}
@@ -231,7 +258,7 @@ const CreateGiftPage = () => {
                   dateFormat="yyyy/MM/dd"
                   className="w-[120px] cursor-pointer rounded-md border p-2"
                 />
-                <div>(중복 선택 가능)</div>
+                <div>(미선택 가능, 중복 선택 가능)</div>
                 <div className="inline-block">
                   {item.dateList.map((dateStr) => (
                     <div
