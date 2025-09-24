@@ -33,7 +33,7 @@ const CreateGiftPage = () => {
   const [deliveryDt, setDeliveryDt] = useState('');
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
-  const [deliveryDate, setDeliveryDate] = useState<Date | null>(null);
+  const [productDate, setProductDate] = useState<Date | null>(null);
   const [isHtml, setIsHtml] = useState(true);
 
   const [details, setDetails] = useState<ProductDetail[]>([
@@ -107,7 +107,7 @@ const CreateGiftPage = () => {
   };
 
   const handleSubmit = async () => {
-    if (!productNm || !startDate || !endDate || !deliveryDate || !deliveryDt) {
+    if (!productNm || !startDate || !endDate || !productDate || !deliveryDt) {
       alert('필수 값을 입력해주세요.');
       return;
     }
@@ -127,7 +127,7 @@ const CreateGiftPage = () => {
           productNm,
           startDate: startDate!.toISOString(),
           endDate: endDate!.toISOString(),
-          deliveryDate: deliveryDate!.toISOString(),
+          productDate: productDate!.toISOString(),
           deliveryDt,
         },
         details,
@@ -144,9 +144,6 @@ const CreateGiftPage = () => {
     }
   };
 
-  useEffect(() => {
-    console.log(deliveryDt);
-  }, [deliveryDt]);
   return (
     <div className="mt-[10px] flex w-full flex-col px-[10px]">
       <div className="flex flex-col gap-2">
@@ -162,8 +159,8 @@ const CreateGiftPage = () => {
             선물 년/월<span className="text-[red]">*</span>
           </div>
           <DatePicker
-            selected={deliveryDate}
-            onChange={(date) => setDeliveryDate(date)}
+            selected={productDate}
+            onChange={(date) => setProductDate(date)}
             dateFormat="yyyy/MM"
             className="w-[90px] cursor-pointer rounded-md border p-2"
             showMonthYearPicker

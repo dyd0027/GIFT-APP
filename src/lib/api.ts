@@ -23,8 +23,8 @@ export interface ProductInput {
   productNm: string;
   startDate: string;
   endDate: string;
-  deliveryDate: string;
   deliveryDt: string;
+  productDate: string;
 }
 
 export async function createGift(params: {

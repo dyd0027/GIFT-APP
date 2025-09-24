@@ -1,4 +1,6 @@
 // /app/api/create/route.ts
+export const runtime = 'nodejs';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { mkdir, writeFile } from 'fs/promises';
 import path from 'path';
@@ -11,7 +13,6 @@ type ProductPayload = {
   productDate: string;
   startDate: string; // ISO
   endDate: string; // ISO
-  deliveryDate: string; // ISO (년/월 UI지만 스키마에 DELIVERY_YM 없음 -> 미사용)
   deliveryDt: string; // 안내문 (VARCHAR(5000))
 };
 
@@ -55,7 +56,6 @@ export async function POST(req: NextRequest) {
 
     const product = JSON.parse(productStr) as ProductPayload;
     const details = JSON.parse(detailsStr) as DetailMeta[];
-
     if (!product.productNm || !product.startDate || !product.endDate || !product.deliveryDt) {
       return NextResponse.json(
         { ok: false, message: 'Missing required product fields' },
@@ -66,20 +66,22 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: false, message: 'Details is empty' }, { status: 400 });
     }
 
-    // 업로드 디렉토리(개발용; 서버리스면 S3 사용 권장)
     const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'gift');
     await mkdir(uploadDir, { recursive: true });
 
     const PRODUCT_STDT = toYYYYMMDDHHMMSS(product.startDate, false);
     const PRODUCT_EDDT = toYYYYMMDDHHMMSS(product.endDate, true);
-    const DELIVERY_DT = product.deliveryDt; // VARCHAR(5000)
+    const DELIVERY_DT = product.deliveryDt;
+    const tempDate = new Date(product.productDate);
+    const productDate =
+      tempDate.getFullYear() + '년' + String(tempDate.getMonth() + 1).padStart(2, '0') + '월';
 
     const result = await prisma.$transaction(async (tx) => {
       // 1) product_m 생성
       const createdProduct = await tx.product_m.create({
         data: {
           PRODUCT_NM: product.productNm,
-          PRODUCT_DATE: product.productDate,
+          PRODUCT_DATE: productDate,
           PRODUCT_STDT,
           PRODUCT_EDDT,
           DELIVERY_DT: DELIVERY_DT,
@@ -119,7 +121,6 @@ export async function POST(req: NextRequest) {
           const dotIdx = origName.lastIndexOf('.');
           const ext = dotIdx >= 0 ? origName.slice(dotIdx) : '.bin';
 
-          // 파일명 규칙: `${product_seq}_${product_sub.id}${ext}`
           const fileName = `${productSeq}_${subId}${ext}`;
           const abs = path.join(uploadDir, fileName);
           await writeFile(abs, buffer);
