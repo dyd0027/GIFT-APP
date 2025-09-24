@@ -89,9 +89,8 @@ export async function POST(req: NextRequest) {
       });
       const productSeq = createdProduct.SEQ; // INT
 
-      // 2) product_sub 생성 (이미지 경로는 나중에 업데이트)
-      //    details의 인덱스를 유지해서 파일 키(detailImage_i)와 매핑
-      const createdSubs: { index: number; subId: number }[] = [];
+      // product_sub 생성 (이미지 경로는 나중에 업데이트)
+      const createdSubs: { index: number; clientId: number; subId: number }[] = [];
 
       for (let i = 0; i < details.length; i++) {
         const d = details[i];
@@ -103,14 +102,31 @@ export async function POST(req: NextRequest) {
             imageFile: null, // 파일 저장 후 업데이트
             sub_sort: Number.isFinite(d.subSort as any) ? d.subSort : i,
             date_list: d.dateList?.length ? d.dateList.join(',') : null,
-            replace_id: d.isReplaceable ? d.replaceId : null,
+            replace_id: null,
             add_detail: d.addDetail || null,
           },
         });
-        createdSubs.push({ index: i, subId: sub.id });
+        createdSubs.push({ index: i, clientId: d.id, subId: sub.id });
       }
 
-      // 3) 이미지 저장 + product_sub.imageFile 업데이트
+      // replaceId 설정
+      const idMap = new Map<number, number>();
+      createdSubs.forEach(({ clientId, subId }) => idMap.set(clientId, subId));
+
+      for (const { index, subId } of createdSubs) {
+        const d = details[index];
+        if (d.isReplaceable && d.replaceId != null) {
+          const targetSubId = idMap.get(d.replaceId);
+          // 방어: 타겟이 없거나 자기 자신이면 스킵
+          if (!targetSubId || targetSubId === subId) continue;
+          await tx.product_sub.update({
+            where: { id: subId },
+            data: { replace_id: targetSubId },
+          });
+        }
+      }
+
+      // 이미지 저장 + product_sub.imageFile 업데이트
       for (const { index, subId } of createdSubs) {
         const file = form.get(`detailImage_${index}`);
         if (file && file instanceof File) {
@@ -133,7 +149,7 @@ export async function POST(req: NextRequest) {
         }
       }
 
-      // 4) choice_store 다건 insert
+      // choice_store 다건 insert
       for (const { index, subId } of createdSubs) {
         const d = details[index];
         if (d.isStoreInfo && d.storeInfos?.length) {

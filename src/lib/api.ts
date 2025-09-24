@@ -51,7 +51,6 @@ export async function createGift(params: {
   fd.append('product', JSON.stringify(product));
   fd.append('details', JSON.stringify(detailsMeta));
 
-  // 파일은 인덱스로 맞춰 보냄: detailImage_0, detailImage_1, ...
   details.forEach((d, i) => {
     if (d.imageFile) {
       fd.append(`detailImage_${i}`, d.imageFile, d.imageFile.name);
