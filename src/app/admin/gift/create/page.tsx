@@ -12,6 +12,7 @@ interface StoreInfo {
   seq: number;
   region: string;
   address: string;
+  tel: string;
 }
 interface ProductDetail {
   id: number;
@@ -143,7 +144,6 @@ const CreateGiftPage = () => {
       alert(e?.message ?? '에러가 발생했습니다.');
     }
   };
-
   return (
     <div className="mt-[10px] flex w-full flex-col px-[10px]">
       <div className="flex flex-col gap-2">
@@ -425,14 +425,14 @@ const CreateGiftPage = () => {
                               return false;
                             }
                             const firstRow = parsed[0] as Record<string, any>;
-                            const requiredKeys = ['SEQ', '지역', '주소'];
+                            const requiredKeys = ['SEQ', '지역', '주소', '매장전화번호'];
                             const hasAllKeys = requiredKeys.every((key) =>
                               Object.keys(firstRow).includes(key)
                             );
 
                             if (!hasAllKeys) {
                               alert(
-                                '엑셀 형식이 잘못되었습니다. (필수 컬럼: SEQ, 지역, 주소). 샘플 액셀을 다운받아서 사용해주세요.'
+                                '엑셀 형식이 잘못되었습니다. 샘플 액셀을 다운받아서 사용해주세요.'
                               );
                               e.target.value = '';
                               setDetails((prev) =>
@@ -440,17 +440,21 @@ const CreateGiftPage = () => {
                               );
                               return false;
                             }
-
+                            const normalized = XLSX.utils.sheet_to_json(sheet, {
+                              header: ['seq', 'region', 'address', 'tel'],
+                              range: 1,
+                            });
                             // ✅ StoreInfo[]로 저장
-                            const storeInfos: StoreInfo[] = parsed.map((row: any) => ({
+                            const storeInfos: StoreInfo[] = normalized.map((row: any) => ({
                               seq: Number(row.seq),
                               region: String(row.region),
                               address: String(row.address),
+                              tel: String(row.tel),
                             }));
-
                             setDetails((prev) =>
                               prev.map((i) => (i.id === item.id ? { ...i, storeInfos } : i))
                             );
+                            console.log('ddddd>', storeInfos);
                             alert('업로드 되었습니다.');
                           };
                           reader.readAsArrayBuffer(file);

@@ -10,11 +10,14 @@ datasource db {
 model choice_store {
   id             Int         @id @default(autoincrement())
   product_sub_id Int
+  seq            Int?
   region         String?     @db.VarChar(255)
   address        String?     @db.VarChar(1000)
+  tel            String?     @db.VarChar(50)
   product_sub    product_sub @relation(fields: [product_sub_id], references: [id], onDelete: Cascade, map: "fk_product_sub_id")
 
   @@index([product_sub_id], map: "fk_choice_store_product_sub_id")
+  @@index([product_sub_id, seq], map: "idx_choice_store_prod_seq")
 }
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.

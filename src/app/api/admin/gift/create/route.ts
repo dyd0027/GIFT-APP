@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { mkdir, writeFile } from 'fs/promises';
 import path from 'path';
 import { PrismaClient } from '@prisma/client';
+import { sqltag } from '@prisma/client/runtime/library';
 
 const prisma = new PrismaClient();
 
@@ -17,9 +18,10 @@ type ProductPayload = {
 };
 
 type StoreInfo = {
-  // 지금 스키마엔 seq 컬럼이 없으므로 제외
+  seq: number;
   region: string | null | undefined;
   address: string | null | undefined;
+  tel: string | null | undefined;
 };
 
 type DetailMeta = {
@@ -161,8 +163,10 @@ export async function POST(req: NextRequest) {
           await tx.choice_store.createMany({
             data: d.storeInfos.map((s) => ({
               product_sub_id: subId,
+              seq: s?.seq ?? null,
               region: s?.region ?? null,
               address: s?.address ?? null,
+              tel: s?.tel ?? null,
             })),
           });
         }

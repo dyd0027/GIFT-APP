@@ -2,6 +2,7 @@ export interface StoreInfo {
   seq: number;
   region: string;
   address: string;
+  tel: string;
 }
 
 export interface ProductDetailInput {
@@ -47,7 +48,6 @@ export async function createGift(params: {
     isStoreInfo: d.isStoreInfo,
     storeInfos: d.storeInfos,
   }));
-
   fd.append('product', JSON.stringify(product));
   fd.append('details', JSON.stringify(detailsMeta));
 
