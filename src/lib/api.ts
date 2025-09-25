@@ -14,7 +14,7 @@ export interface ProductDetailInput {
   subSort: number;
   dateList: string[];
   isReplaceable: boolean;
-  replaceId: number | null;
+  replaceIds: number[];
   isStoreInfo: boolean;
   storeInfos: StoreInfo[];
 }
@@ -43,7 +43,7 @@ export async function createGift(params: {
     subSort: d.subSort,
     dateList: d.dateList,
     isReplaceable: d.isReplaceable,
-    replaceId: d.replaceId,
+    replaceIds: d.replaceIds,
     isStoreInfo: d.isStoreInfo,
     storeInfos: d.storeInfos,
   }));

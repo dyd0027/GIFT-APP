@@ -23,7 +23,7 @@ interface ProductDetail {
   subSort: number;
   dateList: string[];
   isReplaceable: boolean;
-  replaceId: number | null;
+  replaceIds: number[];
   isStoreInfo: boolean;
   storeInfos: StoreInfo[];
 }
@@ -47,7 +47,7 @@ const CreateGiftPage = () => {
       subSort: 0,
       dateList: [],
       isReplaceable: false,
-      replaceId: null,
+      replaceIds: [],
       isStoreInfo: false,
       storeInfos: [],
     },
@@ -66,7 +66,7 @@ const CreateGiftPage = () => {
         subSort: details.length,
         dateList: [],
         isReplaceable: false,
-        replaceId: null,
+        replaceIds: [],
         isStoreInfo: false,
         storeInfos: [],
       },
@@ -255,7 +255,7 @@ const CreateGiftPage = () => {
                   dateFormat="yyyy/MM/dd"
                   className="w-[120px] cursor-pointer rounded-md border p-2"
                 />
-                <div>(미선택 가능, 중복 선택 가능)</div>
+                <div className="text-sm">(미선택 가능, 중복 선택 가능)</div>
                 <div className="inline-block">
                   {item.dateList.map((dateStr) => (
                     <div
@@ -300,7 +300,7 @@ const CreateGiftPage = () => {
             </div>
             <div className="flex w-full">
               <div className="!w-[100px]">대체상품</div>
-              <div>
+              <div className="flex-1">
                 <select
                   name="isReplaceable"
                   value={item.isReplaceable ? 'Y' : 'N'}
@@ -312,7 +312,7 @@ const CreateGiftPage = () => {
                           ? {
                               ...i,
                               isReplaceable: value,
-                              replaceId: value ? i.replaceId : null,
+                              replaceIds: value ? i.replaceIds : [],
                             }
                           : i
                       )
@@ -324,29 +324,46 @@ const CreateGiftPage = () => {
                   <option value="Y">Y</option>
                 </select>
                 {item.isReplaceable && (
-                  <div className="flex w-full items-center">
-                    <div className="!w-[120px]">
-                      대체상품 선택<span className="text-[red]">*</span>
+                  <div className="flex flex-col border bg-[white] p-2">
+                    <div>
+                      대체상품 선택<span className="text-sm">(중복선택 가능)</span>
+                      <span className="text-[red]">*</span>
                     </div>
-                    <select
-                      value={item.replaceId ?? ''}
-                      onChange={(e) => {
-                        const selectedId = Number(e.target.value);
-                        setDetails((prev) =>
-                          prev.map((i) => (i.id === item.id ? { ...i, replaceId: selectedId } : i))
-                        );
-                      }}
-                      className="flex-1 rounded border p-2"
-                    >
-                      <option value="">선택 안함</option>
+
+                    <div className="flex flex-wrap gap-2">
                       {details
                         .filter((other) => other.id !== item.id)
-                        .map((option) => (
-                          <option key={option.id} value={option.id}>
-                            {option.detailNm || `상품 ${option.id}`}
-                          </option>
-                        ))}
-                    </select>
+                        .map((option) => {
+                          const isSelected = item.replaceIds.includes(option.id);
+                          return (
+                            <button
+                              key={option.id}
+                              type="button"
+                              onClick={() => {
+                                setDetails((prev) =>
+                                  prev.map((i) =>
+                                    i.id === item.id
+                                      ? {
+                                          ...i,
+                                          replaceIds: isSelected
+                                            ? i.replaceIds.filter((rid) => rid !== option.id) // 해제
+                                            : [...i.replaceIds, option.id], // 추가
+                                        }
+                                      : i
+                                  )
+                                );
+                              }}
+                              className={`rounded border px-3 py-1 ${
+                                isSelected
+                                  ? 'rounded-full bg-[#2FCBC0] px-3 py-1 text-sm text-white'
+                                  : 'border-gray-300 bg-gray-100 text-sm text-gray-800 hover:bg-gray-200'
+                              }`}
+                            >
+                              {option.detailNm || `상품 ${option.id}`}
+                            </button>
+                          );
+                        })}
+                    </div>
                   </div>
                 )}
               </div>
@@ -475,7 +492,7 @@ const CreateGiftPage = () => {
           </div>
         </div>
       </div>
-      <AsyncButton handleSubmit={handleSubmit} label="등록" className="mt-[50px]" />
+      <AsyncButton handleSubmit={handleSubmit} label="등록" className="mb-[80px] mt-[50px]" />
     </div>
   );
 };

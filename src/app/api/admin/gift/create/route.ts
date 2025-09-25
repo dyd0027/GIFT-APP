@@ -28,9 +28,9 @@ type DetailMeta = {
   detail: string;
   addDetail: string;
   subSort: number;
-  dateList: string[]; // ["YYYYMMDD", ...] 콤마로 직렬화
+  dateList: string[];
   isReplaceable: boolean;
-  replaceId: number | null;
+  replaceIds: number[];
   isStoreInfo: boolean;
   storeInfos: StoreInfo[];
 };
@@ -102,26 +102,31 @@ export async function POST(req: NextRequest) {
             imageFile: null, // 파일 저장 후 업데이트
             sub_sort: Number.isFinite(d.subSort as any) ? d.subSort : i,
             date_list: d.dateList?.length ? d.dateList.join(',') : null,
-            replace_id: null,
+            replace_ids: null,
             add_detail: d.addDetail || null,
           },
         });
         createdSubs.push({ index: i, clientId: d.id, subId: sub.id });
       }
 
-      // replaceId 설정
+      // replaceIds 설정
       const idMap = new Map<number, number>();
       createdSubs.forEach(({ clientId, subId }) => idMap.set(clientId, subId));
 
       for (const { index, subId } of createdSubs) {
         const d = details[index];
-        if (d.isReplaceable && d.replaceId != null) {
-          const targetSubId = idMap.get(d.replaceId);
-          // 방어: 타겟이 없거나 자기 자신이면 스킵
-          if (!targetSubId || targetSubId === subId) continue;
+        if (d.isReplaceable && Array.isArray(d.replaceIds) && d.replaceIds.length) {
+          // 임시 id 배열 -> 실제 subId 배열
+          const mapped = d.replaceIds
+            .map((cid) => idMap.get(cid))
+            .filter((v): v is number => !!v && v !== subId); // 자기 자신 제외
+
+          const unique = Array.from(new Set(mapped));
+          const csv = unique.join(',');
+
           await tx.product_sub.update({
             where: { id: subId },
-            data: { replace_id: targetSubId },
+            data: { replace_ids: csv },
           });
         }
       }
