@@ -7,11 +7,11 @@ import Color from '@tiptap/extension-color';
 import { useState } from 'react';
 
 interface TiptapEditorProps {
-  deliveryDt: string;
-  setDeliveryDt: (val: string) => void;
+  notice: string;
+  setNotice: (val: string) => void;
 }
 
-export default function TiptapEditor({ deliveryDt, setDeliveryDt }: TiptapEditorProps) {
+export default function TiptapEditor({ notice, setNotice }: TiptapEditorProps) {
   const [showTextColor, setShowTextColor] = useState(false);
 
   const editor = useEditor({
@@ -33,9 +33,9 @@ export default function TiptapEditor({ deliveryDt, setDeliveryDt }: TiptapEditor
       TextStyle,
       Color,
     ],
-    content: deliveryDt || '<p></p>',
+    content: notice || '<p></p>',
     onUpdate({ editor }) {
-      setDeliveryDt(editor.getHTML());
+      setNotice(editor.getHTML());
     },
     immediatelyRender: false,
   });

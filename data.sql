@@ -13,7 +13,7 @@ CREATE TABLE `product_m` (
   `PRODUCT_NM` varchar(100) NOT NULL,
   `PRODUCT_STDT` varchar(14) NOT NULL,
   `PRODUCT_EDDT` varchar(14) NOT NULL,
-  `DELIVERY_DT` varchar(5000) NOT NULL,
+  `NOTICE` varchar(5000) NOT NULL,
   `PROGRESS_YN` char(1) NOT NULL DEFAULT '',
   PRIMARY KEY (`SEQ`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

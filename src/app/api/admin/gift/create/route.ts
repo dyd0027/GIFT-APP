@@ -5,39 +5,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { mkdir, writeFile } from 'fs/promises';
 import path from 'path';
 import { PrismaClient } from '@prisma/client';
-import { sqltag } from '@prisma/client/runtime/library';
+import { Product } from '@/types/Product';
+import { ProductDetail } from '@/types/ProductDetail';
 
 const prisma = new PrismaClient();
 
-type ProductPayload = {
-  productNm: string;
-  productDate: string;
-  startDate: string; // ISO
-  endDate: string; // ISO
-  deliveryDt: string; // 안내문 (VARCHAR(5000))
-};
-
-type StoreInfo = {
-  seq: number;
-  region: string | null | undefined;
-  address: string | null | undefined;
-  tel: string | null | undefined;
-};
-
-type DetailMeta = {
-  id: number;
-  detailNm: string;
-  detail: string;
-  addDetail: string;
-  subSort: number;
-  dateList: string[];
-  isReplaceable: boolean;
-  replaceIds: number[];
-  isStoreInfo: boolean;
-  storeInfos: StoreInfo[];
-};
-
-// 유틸: ISO -> yyyymmddHHMMSS (시작/끝 경계 포함)
 function toYYYYMMDDHHMMSS(iso: string, endOfDay = false) {
   const d = new Date(iso);
   const yyyy = d.getFullYear();
@@ -56,9 +28,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: false, message: 'Invalid payload' }, { status: 400 });
     }
 
-    const product = JSON.parse(productStr) as ProductPayload;
-    const details = JSON.parse(detailsStr) as DetailMeta[];
-    if (!product.productNm || !product.startDate || !product.endDate || !product.deliveryDt) {
+    const product = JSON.parse(productStr) as Product;
+    const details = JSON.parse(detailsStr) as ProductDetail[];
+    if (!product.productNm || !product.startDate || !product.endDate || !product.notice) {
       return NextResponse.json(
         { ok: false, message: 'Missing required product fields' },
         { status: 400 }
@@ -73,7 +45,7 @@ export async function POST(req: NextRequest) {
 
     const PRODUCT_STDT = toYYYYMMDDHHMMSS(product.startDate, false);
     const PRODUCT_EDDT = toYYYYMMDDHHMMSS(product.endDate, true);
-    const DELIVERY_DT = product.deliveryDt;
+    const NOTICE = product.notice;
     const tempDate = new Date(product.productDate);
     const productDate =
       tempDate.getFullYear() + '년' + String(tempDate.getMonth() + 1).padStart(2, '0') + '월';
@@ -86,7 +58,7 @@ export async function POST(req: NextRequest) {
           PRODUCT_DATE: productDate,
           PRODUCT_STDT,
           PRODUCT_EDDT,
-          DELIVERY_DT: DELIVERY_DT,
+          NOTICE: NOTICE,
         },
       });
       const productSeq = createdProduct.SEQ; // INT

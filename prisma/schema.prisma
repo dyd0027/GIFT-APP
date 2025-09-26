@@ -20,10 +20,9 @@ model choice_store {
   @@index([product_sub_id, seq], map: "idx_choice_store_prod_seq")
 }
 
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model delivery_addr_m {
   PRODUCT_SEQ          Int          @default(0)
-  EMP_KEY_TELNO        String?      @db.VarChar(200)
+  EMP_KEY_TELNO        String       @db.VarChar(200)
   PRODUCT_SUB_ID       Int?
   EMP_NM               String?      @db.VarChar(200)
   EMP_TELNO            String?      @db.VarChar(200)
@@ -41,8 +40,7 @@ model delivery_addr_m {
   product_m            product_m    @relation(fields: [PRODUCT_SEQ], references: [SEQ], onDelete: Cascade, map: "fk_delivery_addr_product_seq")
   product_sub          product_sub? @relation(fields: [PRODUCT_SUB_ID], references: [id], onDelete: Cascade, map: "fk_delivery_addr_product_sub_id")
 
-  @@index([PRODUCT_SEQ], map: "fk_delivery_addr_product_seq")
-  @@ignore
+  @@id([PRODUCT_SEQ, EMP_KEY_TELNO])
 }
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
@@ -113,8 +111,8 @@ model product_m {
   PRODUCT_DATE    String            @db.VarChar(100)
   PRODUCT_STDT    String            @db.VarChar(14)
   PRODUCT_EDDT    String            @db.VarChar(14)
-  DELIVERY_DT     String            @db.VarChar(5000)
-  delivery_addr_m delivery_addr_m[] @ignore
+  NOTICE          String            @db.VarChar(5000)
+  delivery_addr_m delivery_addr_m[]
   product_sub     product_sub[]
 }
 
@@ -129,7 +127,7 @@ model product_sub {
   replace_ids     String?           @db.VarChar(500)
   add_detail      String?           @db.Text
   choice_store    choice_store[]
-  delivery_addr_m delivery_addr_m[] @ignore
+  delivery_addr_m delivery_addr_m[]
   product_m       product_m         @relation(fields: [product_seq], references: [SEQ], onDelete: Cascade, map: "fk_product_sub_product_seq")
 
   @@index([product_seq], map: "fk_product_sub_product_seq")
