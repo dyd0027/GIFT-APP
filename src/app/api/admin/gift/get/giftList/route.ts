@@ -1,4 +1,3 @@
-// /app/api/get/giftList/route.ts
 export const runtime = 'nodejs';
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -7,7 +6,7 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export async function get(req: NextRequest) {
+export async function GET(req: NextRequest) {
   try {
     const gifts = await prisma.gift_m.findMany({
       orderBy: { seq: 'desc' },

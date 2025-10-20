@@ -5,8 +5,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { mkdir, writeFile } from 'fs/promises';
 import path from 'path';
 import { PrismaClient } from '@prisma/client';
-import { Product } from '@/types/Gift';
-import { ProductDetail } from '@/types/GiftDetail';
+import { Gift } from '@/types/Gift';
+import { GiftDetail } from '@/types/GiftDetail';
 
 const prisma = new PrismaClient();
 
@@ -22,17 +22,17 @@ export async function POST(req: NextRequest) {
   try {
     const form = await req.formData();
 
-    const productStr = form.get('product');
+    const giftStr = form.get('gift');
     const detailsStr = form.get('details');
-    if (typeof productStr !== 'string' || typeof detailsStr !== 'string') {
+    if (typeof giftStr !== 'string' || typeof detailsStr !== 'string') {
       return NextResponse.json({ ok: false, message: 'Invalid payload' }, { status: 400 });
     }
 
-    const product = JSON.parse(productStr) as Product;
-    const details = JSON.parse(detailsStr) as ProductDetail[];
-    if (!product.productNm || !product.startDate || !product.endDate || !product.notice) {
+    const gift = JSON.parse(giftStr) as Gift;
+    const details = JSON.parse(detailsStr) as GiftDetail[];
+    if (!gift.giftNm || !gift.startDate || !gift.endDate || !gift.notice) {
       return NextResponse.json(
-        { ok: false, message: 'Missing required product fields' },
+        { ok: false, message: 'Missing required gift fields' },
         { status: 400 }
       );
     }
@@ -43,34 +43,33 @@ export async function POST(req: NextRequest) {
     const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'gift');
     await mkdir(uploadDir, { recursive: true });
 
-    const PRODUCT_STDT = toYYYYMMDDHHMMSS(product.startDate, false);
-    const PRODUCT_EDDT = toYYYYMMDDHHMMSS(product.endDate, true);
-    const NOTICE = product.notice;
-    const tempDate = new Date(product.productDate);
-    const productDate =
+    const gift_stdt = toYYYYMMDDHHMMSS(gift.startDate, false);
+    const gift_eddt = toYYYYMMDDHHMMSS(gift.endDate, true);
+    const tempDate = new Date(gift.giftDate);
+    const giftDate =
       tempDate.getFullYear() + '년' + String(tempDate.getMonth() + 1).padStart(2, '0') + '월';
 
     const result = await prisma.$transaction(async (tx) => {
-      // 1) product_m 생성
-      const createdProduct = await tx.product_m.create({
+      // 1) gift_m 생성
+      const createdGift = await tx.gift_m.create({
         data: {
-          PRODUCT_NM: product.productNm,
-          PRODUCT_DATE: productDate,
-          PRODUCT_STDT,
-          PRODUCT_EDDT,
-          NOTICE: NOTICE,
+          gift_nm: gift.giftNm,
+          gift_date: giftDate,
+          gift_stdt,
+          gift_eddt,
+          notice: gift.notice,
         },
       });
-      const productSeq = createdProduct.SEQ; // INT
+      const giftSeq = createdGift.seq; // INT
 
-      // product_sub 생성 (이미지 경로는 나중에 업데이트)
+      // gift_sub 생성 (이미지 경로는 나중에 업데이트)
       const createdSubs: { index: number; clientId: number; subId: number }[] = [];
 
       for (let i = 0; i < details.length; i++) {
         const d = details[i];
-        const sub = await tx.product_sub.create({
+        const sub = await tx.gift_sub.create({
           data: {
-            product_seq: productSeq,
+            gift_seq: giftSeq,
             detailNm: d.detailNm,
             detail: d.detail || null,
             imageFile: null, // 파일 저장 후 업데이트
@@ -98,14 +97,14 @@ export async function POST(req: NextRequest) {
           const unique = Array.from(new Set(mapped));
           const csv = unique.join(',');
 
-          await tx.product_sub.update({
+          await tx.gift_sub.update({
             where: { id: subId },
             data: { replace_ids: csv },
           });
         }
       }
 
-      // 이미지 저장 + product_sub.imageFile 업데이트
+      // 이미지 저장 + gift_sub.imageFile 업데이트
       for (const { index, subId } of createdSubs) {
         const file = form.get(`detailImage_${index}`);
         if (file && file instanceof File) {
@@ -116,12 +115,12 @@ export async function POST(req: NextRequest) {
           const dotIdx = origName.lastIndexOf('.');
           const ext = dotIdx >= 0 ? origName.slice(dotIdx) : '.bin';
 
-          const fileName = `${productSeq}_${subId}${ext}`;
+          const fileName = `${giftSeq}_${subId}${ext}`;
           const abs = path.join(uploadDir, fileName);
           await writeFile(abs, buffer);
 
           const publicPath = `/uploads/gift/${fileName}`;
-          await tx.product_sub.update({
+          await tx.gift_sub.update({
             where: { id: subId },
             data: { imageFile: publicPath },
           });
@@ -134,7 +133,7 @@ export async function POST(req: NextRequest) {
         if (d.isStoreInfo && d.storeInfos?.length) {
           await tx.choice_store.createMany({
             data: d.storeInfos.map((s) => ({
-              product_sub_id: subId,
+              gift_sub_id: subId,
               seq: s?.seq ?? null,
               region: s?.region ?? null,
               address: s?.address ?? null,
@@ -144,7 +143,7 @@ export async function POST(req: NextRequest) {
         }
       }
 
-      return { productSeq, countSubs: createdSubs.length };
+      return { giftSeq, countSubs: createdSubs.length };
     });
 
     return NextResponse.json({ ok: true, data: result }, { status: 200 });

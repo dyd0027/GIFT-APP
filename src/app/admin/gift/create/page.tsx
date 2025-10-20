@@ -4,7 +4,7 @@ import GiftForm from '@/components/admin/gift/GiftForm';
 import Button from '@/components/common/Button';
 import { useState } from 'react';
 import { Gift } from '@/types/Gift';
-import { getGiftList } from '@/lib/api';
+import { getGiftList } from '@/lib/client/gift/getGiftList';
 const CreateGiftPage = () => {
   const [isPrev, setIsPrev] = useState(false);
   const [prevGift, setPrevGift] = useState<Gift[]>();

@@ -7,14 +7,15 @@ import TiptapEditor from '@/components/common/TipTopEditor';
 import * as XLSX from 'xlsx';
 import { useMemo, useState } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
-import { createGift, updateGift } from '@/lib/api';
+import { createGift } from '@/lib/client/gift/createGift';
+import { updateGift } from '@/lib/client/gift/updateGift';
 import { useRouter } from 'next/navigation';
 import { GiftDetail } from '@/types/GiftDetail';
 import { StoreInfo } from '@/types/StoreInfo';
 import { Gift } from '@/types/Gift';
 
 type GiftFormProps = {
-  giftSeq?: number; // modify일 때만 값이 있음
+  giftSeq?: number; // update할 때만 값이 있음
   initialGift?: Gift;
   initialDetails?: GiftDetail[];
 };
@@ -146,7 +147,7 @@ const GiftForm = ({ giftSeq, initialGift, initialDetails }: GiftFormProps) => {
         });
         if (res.ok) {
           alert('등록되었습니다.');
-          router.push('./modify');
+          router.push('./update');
         } else {
           alert(`등록 실패: ${res.message ?? '알 수 없는 오류'}`);
         }

@@ -3,7 +3,7 @@ import { isoFromYYYYMMDDHHMMSS, toFirstDayISOFromLabel } from '@/utils/date';
 
 const prisma = new PrismaClient();
 
-export async function getGiftData(seq: number) {
+export async function GET(seq: number) {
   const gift = await prisma.gift_m.findFirst({
     where: { seq: seq },
     include: {

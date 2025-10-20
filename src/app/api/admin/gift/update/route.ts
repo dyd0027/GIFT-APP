@@ -1,12 +1,11 @@
-// /app/api/admin/gift/modify/route.ts
 export const runtime = 'nodejs';
 
 import { NextRequest, NextResponse } from 'next/server';
 import { mkdir, writeFile } from 'fs/promises';
 import path from 'path';
-import { Prisma, PrismaClient } from '@prisma/client';
-import { Product } from '@/types/Gift';
-import { ProductDetail } from '@/types/GiftDetail';
+import { PrismaClient } from '@prisma/client';
+import { Gift } from '@/types/Gift';
+import { GiftDetail } from '@/types/GiftDetail';
 
 const prisma = new PrismaClient();
 
@@ -22,27 +21,27 @@ export async function POST(req: NextRequest) {
   try {
     const form = await req.formData();
 
-    const productSeqStr = form.get('productSeq');
-    const productStr = form.get('product');
+    const giftSeqStr = form.get('giftSeq');
+    const giftStr = form.get('gift');
     const detailsStr = form.get('details');
 
-    if (typeof productSeqStr !== 'string' || !/^\d+$/.test(productSeqStr)) {
-      return NextResponse.json({ ok: false, message: 'Invalid productSeq' }, { status: 400 });
+    if (typeof giftSeqStr !== 'string' || !/^\d+$/.test(giftSeqStr)) {
+      return NextResponse.json({ ok: false, message: 'Invalid giftSeq' }, { status: 400 });
     }
-    if (typeof productStr !== 'string' || typeof detailsStr !== 'string') {
+    if (typeof giftStr !== 'string' || typeof detailsStr !== 'string') {
       return NextResponse.json({ ok: false, message: 'Invalid payload' }, { status: 400 });
     }
 
-    const productSeq = Number(productSeqStr);
-    const product = JSON.parse(productStr) as Product;
-    const details = JSON.parse(detailsStr) as (Omit<ProductDetail, 'imageFile' | 'previewUrl'> & {
+    const giftSeq = Number(giftSeqStr);
+    const gift = JSON.parse(giftStr) as Gift;
+    const details = JSON.parse(detailsStr) as (Omit<GiftDetail, 'imageFile' | 'previewUrl'> & {
       imageFile?: never;
       previewUrl?: never;
     })[];
 
-    if (!product.productNm || !product.startDate || !product.endDate || !product.notice) {
+    if (!gift.giftNm || !gift.startDate || !gift.endDate || !gift.notice) {
       return NextResponse.json(
-        { ok: false, message: 'Missing required product fields' },
+        { ok: false, message: 'Missing required gift fields' },
         { status: 400 }
       );
     }
@@ -51,34 +50,33 @@ export async function POST(req: NextRequest) {
     const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'gift');
     await mkdir(uploadDir, { recursive: true });
 
-    const PRODUCT_STDT = toYYYYMMDDHHMMSS(product.startDate, false);
-    const PRODUCT_EDDT = toYYYYMMDDHHMMSS(product.endDate, true);
-    const NOTICE = product.notice;
-    const tmpDate = new Date(product.productDate);
-    const productDate = `${tmpDate.getFullYear()}년${String(tmpDate.getMonth() + 1).padStart(2, '0')}월`;
+    const gift_stdt = toYYYYMMDDHHMMSS(gift.startDate, false);
+    const gift_eddt = toYYYYMMDDHHMMSS(gift.endDate, true);
+    const tmpDate = new Date(gift.giftDate);
+    const giftDate = `${tmpDate.getFullYear()}년${String(tmpDate.getMonth() + 1).padStart(2, '0')}월`;
 
     const result = await prisma.$transaction(async (tx) => {
-      // 0) product 존재 확인
-      const exists = await tx.product_m.findUnique({ where: { SEQ: productSeq } });
+      // 0) gift 존재 확인
+      const exists = await tx.gift_m.findUnique({ where: { seq: giftSeq } });
       if (!exists) {
-        throw new Error(`product_m not found: ${productSeq}`);
+        throw new Error(`gift_m not found: ${giftSeq}`);
       }
 
-      // 1) product_m 업데이트
-      await tx.product_m.update({
-        where: { SEQ: productSeq },
+      // 1) gift_m 업데이트
+      await tx.gift_m.update({
+        where: { seq: giftSeq },
         data: {
-          PRODUCT_NM: product.productNm,
-          PRODUCT_DATE: productDate,
-          PRODUCT_STDT,
-          PRODUCT_EDDT,
-          NOTICE: NOTICE,
+          gift_nm: gift.giftNm,
+          gift_date: giftDate,
+          gift_stdt,
+          gift_eddt,
+          notice: gift.notice,
         },
       });
 
       // 2) 기존 sub 리스트
-      const existingSubs = await tx.product_sub.findMany({
-        where: { product_seq: productSeq },
+      const existingSubs = await tx.gift_sub.findMany({
+        where: { gift_seq: giftSeq },
         select: { id: true },
       });
       const existingIds = new Set(existingSubs.map((s) => s.id));
@@ -93,7 +91,7 @@ export async function POST(req: NextRequest) {
 
         if (isExisting) {
           // UPDATE
-          await tx.product_sub.update({
+          await tx.gift_sub.update({
             where: { id: d.id },
             data: {
               detailNm: d.detailNm,
@@ -107,9 +105,9 @@ export async function POST(req: NextRequest) {
           createdOrUpdated.push({ index: i, clientId: d.id, subId: d.id });
         } else {
           // CREATE
-          const sub = await tx.product_sub.create({
+          const sub = await tx.gift_sub.create({
             data: {
-              product_seq: productSeq,
+              gift_seq: giftSeq,
               detailNm: d.detailNm,
               detail: d.detail || null,
               imageFile: null,
@@ -127,7 +125,7 @@ export async function POST(req: NextRequest) {
       const clientIdsSet = new Set(details.map((d) => d.id));
       const idsToDelete = [...existingIds].filter((id) => !clientIdsSet.has(id));
       if (idsToDelete.length > 0) {
-        await tx.product_sub.deleteMany({
+        await tx.gift_sub.deleteMany({
           where: { id: { in: idsToDelete } },
         });
       }
@@ -141,12 +139,12 @@ export async function POST(req: NextRequest) {
           const origName = (file as File).name || 'file';
           const dotIdx = origName.lastIndexOf('.');
           const ext = dotIdx >= 0 ? origName.slice(dotIdx) : '.bin';
-          const fileName = `${productSeq}_${subId}${ext}`;
+          const fileName = `${giftSeq}_${subId}${ext}`;
           const abs = path.join(uploadDir, fileName);
           await writeFile(abs, buffer); // 덮어쓰기
 
           const publicPath = `/uploads/gift/${fileName}`;
-          await tx.product_sub.update({
+          await tx.gift_sub.update({
             where: { id: subId },
             data: { imageFile: publicPath },
           });
@@ -165,7 +163,7 @@ export async function POST(req: NextRequest) {
           .filter((v): v is number => !!v && v !== subId);
         const csv = Array.from(new Set(mapped)).join(',') || null;
 
-        await tx.product_sub.update({
+        await tx.gift_sub.update({
           where: { id: subId },
           data: { replace_ids: csv },
         });
@@ -175,12 +173,12 @@ export async function POST(req: NextRequest) {
       for (const { index, subId } of createdOrUpdated) {
         const d = details[index];
         // 지우기
-        await tx.choice_store.deleteMany({ where: { product_sub_id: subId } });
+        await tx.choice_store.deleteMany({ where: { gift_sub_id: subId } });
         // 다시 삽입
         if (d.isStoreInfo && d.storeInfos?.length) {
           await tx.choice_store.createMany({
             data: d.storeInfos.map((s) => ({
-              product_sub_id: subId,
+              gift_sub_id: subId,
               seq: s?.seq ?? null,
               region: s?.region ?? null,
               address: s?.address ?? null,
@@ -192,7 +190,7 @@ export async function POST(req: NextRequest) {
       }
 
       return {
-        productSeq,
+        giftSeq,
         updated: true,
         subCount: createdOrUpdated.length,
         deletedSubs: idsToDelete.length,
