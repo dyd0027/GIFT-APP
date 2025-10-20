@@ -8,39 +8,40 @@ datasource db {
 }
 
 model choice_store {
-  id             Int         @id @default(autoincrement())
-  product_sub_id Int
-  seq            Int?
-  region         String?     @db.VarChar(255)
-  address        String?     @db.VarChar(1000)
-  tel            String?     @db.VarChar(50)
-  product_sub    product_sub @relation(fields: [product_sub_id], references: [id], onDelete: Cascade, map: "fk_product_sub_id")
+  id          Int      @id @default(autoincrement())
+  gift_sub_id Int
+  seq         Int?
+  region      String?  @db.VarChar(255)
+  address     String?  @db.VarChar(1000)
+  tel         String?  @db.VarChar(50)
+  gift_sub    gift_sub @relation(fields: [gift_sub_id], references: [id], onDelete: Cascade, map: "fk_gift_sub_id")
 
-  @@index([product_sub_id], map: "fk_choice_store_product_sub_id")
-  @@index([product_sub_id, seq], map: "idx_choice_store_prod_seq")
+  @@index([gift_sub_id], map: "fk_choice_store_product_sub_id")
+  @@index([gift_sub_id, seq], map: "idx_choice_store_prod_seq")
 }
 
 model delivery_addr_m {
-  PRODUCT_SEQ          Int          @default(0)
-  EMP_KEY_TELNO        String       @db.VarChar(200)
-  PRODUCT_SUB_ID       Int?
-  EMP_NM               String?      @db.VarChar(200)
-  EMP_TELNO            String?      @db.VarChar(200)
-  EMP_COMP_NM          String?      @db.VarChar(200)
-  EMP_HQ_NM            String?      @db.VarChar(200)
-  EMP_DEPT_NM          String?      @db.VarChar(200)
-  DELIVERY_NM          String       @db.VarChar(200)
-  DELIVERY_TELNO       String?      @db.VarChar(200)
-  DELIVERY_POSTCODE    String?      @db.VarChar(200)
-  DELIVERY_ADDR        String?      @db.VarChar(200)
-  DELIVERY_DETAIL_ADDR String?      @db.VarChar(400)
-  REG_DTTM             DateTime?    @default(now())
-  UPD_DTTM             DateTime?
-  D_HOPE_DT            String?      @db.VarChar(20)
-  product_m            product_m    @relation(fields: [PRODUCT_SEQ], references: [SEQ], onDelete: Cascade, map: "fk_delivery_addr_product_seq")
-  product_sub          product_sub? @relation(fields: [PRODUCT_SUB_ID], references: [id], onDelete: Cascade, map: "fk_delivery_addr_product_sub_id")
+  gift_seq             Int       @default(0)
+  emp_key_telno        String    @db.VarChar(200)
+  gift_sub_id          Int?
+  emp_nm               String?   @db.VarChar(200)
+  emp_telno            String?   @db.VarChar(200)
+  emp_comp_nm          String?   @db.VarChar(200)
+  emp_hq_nm            String?   @db.VarChar(200)
+  emp_dept_nm          String?   @db.VarChar(200)
+  delevery_nm          String    @db.VarChar(200)
+  delevery_telno       String?   @db.VarChar(200)
+  delevery_postcode    String?   @db.VarChar(200)
+  delevery_addr        String?   @db.VarChar(200)
+  delevery_detail_addr String?   @db.VarChar(400)
+  reg_dttm             DateTime? @default(now())
+  upd_dttm             DateTime?
+  d_hope_dt            String?   @db.VarChar(20)
+  gift_m               gift_m    @relation(fields: [gift_seq], references: [seq], onDelete: Cascade, onUpdate: Restrict, map: "fk_delivery_addr_gift_seq")
+  gift_sub             gift_sub? @relation(fields: [gift_sub_id], references: [id], onDelete: Cascade, map: "fk_delivery_addr_gift_sub_id")
 
-  @@id([PRODUCT_SEQ, EMP_KEY_TELNO])
+  @@id([gift_seq, emp_key_telno])
+  @@index([gift_sub_id], map: "idx_delivery_addr_product_sub_id")
 }
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
@@ -105,20 +106,29 @@ model p2021_user_m {
   REG_DTTM DateTime @default(now())
 }
 
-model product_m {
-  SEQ             Int               @id @default(autoincrement())
-  PRODUCT_NM      String            @db.VarChar(100)
-  PRODUCT_DATE    String            @db.VarChar(100)
-  PRODUCT_STDT    String            @db.VarChar(14)
-  PRODUCT_EDDT    String            @db.VarChar(14)
-  NOTICE          String            @db.VarChar(5000)
-  delivery_addr_m delivery_addr_m[]
-  product_sub     product_sub[]
+model user_m {
+  login_id String   @id @db.VarChar(20)
+  login_nm String   @db.VarChar(50)
+  comp_nm  String?  @db.VarChar(100)
+  hq_nm    String?  @db.VarChar(100)
+  dept_nm  String?  @db.VarChar(100)
+  reg_dttm DateTime @default(now())
 }
 
-model product_sub {
+model gift_m {
+  seq             Int               @id @default(autoincrement())
+  gift_nm         String            @db.VarChar(100)
+  gift_date       String            @db.VarChar(100)
+  gift_stdt       String            @db.VarChar(14)
+  gift_eddt       String            @db.VarChar(14)
+  notice          String            @db.VarChar(5000)
+  delivery_addr_m delivery_addr_m[]
+  gift_sub        gift_sub[]
+}
+
+model gift_sub {
   id              Int               @id @default(autoincrement())
-  product_seq     Int
+  gift_seq        Int
   detailNm        String            @db.VarChar(255)
   detail          String?           @db.Text
   imageFile       String?           @db.VarChar(500)
@@ -128,16 +138,7 @@ model product_sub {
   add_detail      String?           @db.Text
   choice_store    choice_store[]
   delivery_addr_m delivery_addr_m[]
-  product_m       product_m         @relation(fields: [product_seq], references: [SEQ], onDelete: Cascade, map: "fk_product_sub_product_seq")
+  gift_m          gift_m            @relation(fields: [gift_seq], references: [seq], onDelete: Cascade, onUpdate: Restrict, map: "fk_gift_sub_gift_seq")
 
-  @@index([product_seq], map: "fk_product_sub_product_seq")
-}
-
-model user_m {
-  LOGIN_ID String   @id @db.VarChar(20)
-  LOGIN_NM String   @db.VarChar(50)
-  COMP_NM  String?  @db.VarChar(100)
-  HQ_NM    String?  @db.VarChar(100)
-  DEPT_NM  String?  @db.VarChar(100)
-  REG_DTTM DateTime @default(now())
+  @@index([gift_seq], map: "fk_gift_sub_gift_seq")
 }

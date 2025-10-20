@@ -3,18 +3,18 @@
 import GiftForm from '@/components/admin/gift/GiftForm';
 import Button from '@/components/common/Button';
 import { useState } from 'react';
-import { Product } from '@/types/Product';
+import { Gift } from '@/types/Gift';
 import { getGiftList } from '@/lib/api';
 const CreateGiftPage = () => {
   const [isPrev, setIsPrev] = useState(false);
-  const [prevProduct, setPrevProduct] = useState<Product[]>();
+  const [prevGift, setPrevGift] = useState<Gift[]>();
   const handlePrev = async () => {
     setIsPrev((prev) => !prev);
     if (!isPrev) {
       const res = await getGiftList();
-      if (res.ok && !prevProduct) {
+      if (res.ok && !prevGift) {
         console.log(res.data.data);
-        setPrevProduct(res.data.data);
+        setPrevGift(res.data.data);
       }
       if (!res.ok) {
         alert('오류내용:' + res?.message?.toString());
@@ -31,11 +31,11 @@ const CreateGiftPage = () => {
         />
         {isPrev && (
           <div>
-            <select name="prevProduct" className="rounded border p-2">
+            <select name="prevGift" className="rounded border p-2">
               <option value={''}>미선택</option>
-              {prevProduct?.map((product) => (
-                <option key={product.seq} value={product.seq}>
-                  {`${product.productDate}: ${product.productNm}`}
+              {prevGift?.map((gift) => (
+                <option key={gift.seq} value={gift.seq}>
+                  {`${gift.giftDate}: ${gift.giftNm}`}
                 </option>
               ))}
             </select>

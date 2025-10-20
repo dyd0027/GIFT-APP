@@ -5,8 +5,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { mkdir, writeFile } from 'fs/promises';
 import path from 'path';
 import { Prisma, PrismaClient } from '@prisma/client';
-import { Product } from '@/types/Product';
-import { ProductDetail } from '@/types/ProductDetail';
+import { Product } from '@/types/Gift';
+import { ProductDetail } from '@/types/GiftDetail';
 
 const prisma = new PrismaClient();
 

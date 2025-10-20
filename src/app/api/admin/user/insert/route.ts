@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: '전화번호와 이름은 필수입니다.' }, { status: 400 });
     }
 
-    const exists = await prisma.user_m.findUnique({ where: { LOGIN_ID: purePhone } });
+    const exists = await prisma.user_m.findUnique({ where: { login_id: purePhone } });
 
     if (exists) {
       return NextResponse.json({ message: '이미 존재하는 전화번호입니다.' }, { status: 409 });
@@ -19,11 +19,11 @@ export async function POST(req: NextRequest) {
 
     await prisma.user_m.create({
       data: {
-        LOGIN_ID: purePhone,
-        LOGIN_NM: name,
-        COMP_NM: company || null,
-        HQ_NM: hq || null,
-        DEPT_NM: dept || null,
+        login_id: purePhone,
+        login_nm: name,
+        comp_nm: company || null,
+        hq_nm: hq || null,
+        dept_nm: dept || null,
       },
     });
 

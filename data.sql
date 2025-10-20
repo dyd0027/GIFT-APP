@@ -1,75 +1,84 @@
 CREATE TABLE `user_m` (
-  `LOGIN_ID` varchar(20) NOT NULL,
-  `LOGIN_NM` varchar(50) NOT NULL,
-  `COMP_NM` varchar(100) DEFAULT NULL,
-  `HQ_NM` varchar(100) DEFAULT NULL,
-  `DEPT_NM` varchar(100) DEFAULT NULL,
-  `REG_DTTM` datetime(3) NOT NULL DEFAULT current_timestamp(3) ON UPDATE current_timestamp(3),
-  PRIMARY KEY (`LOGIN_ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+	`login_id` VARCHAR(20) NOT NULL COLLATE 'utf8mb4_general_ci',
+	`login_nm` VARCHAR(50) NOT NULL COLLATE 'utf8mb4_general_ci',
+	`comp_nm` VARCHAR(100) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`hq_nm` VARCHAR(100) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`dept_nm` VARCHAR(100) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`reg_dttm` DATETIME(3) NOT NULL DEFAULT current_timestamp(3) ON UPDATE current_timestamp(3),
+	PRIMARY KEY (`login_id`) USING BTREE
+)
+COLLATE='utf8mb4_general_ci'
+ENGINE=InnoDB
+;
 
-CREATE TABLE `product_m` (
-  `SEQ` varchar(10) NOT NULL,
-  `PRODUCT_NM` varchar(100) NOT NULL,
-  `PRODUCT_STDT` varchar(14) NOT NULL,
-  `PRODUCT_EDDT` varchar(14) NOT NULL,
-  `NOTICE` varchar(5000) NOT NULL,
-  `PROGRESS_YN` char(1) NOT NULL DEFAULT '',
-  PRIMARY KEY (`SEQ`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
-CREATE TABLE product_sub (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    product_seq VARCHAR(10) NOT NULL,
-    detailNm VARCHAR(255) NOT NULL,
-    detail TEXT,
-    imageFile VARCHAR(500),
-    sub_sort INT DEFAULT 0,
-    CONSTRAINT fk_product_sub_product_seq FOREIGN KEY (product_seq)
-        REFERENCES product_m(seq)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-ALTER TABLE product_sub ADD COLUMN `date_list` VARCHAR(100);
-ALTER TABLE product_sub ADD COLUMN `repalce_id` INT;
-ALTER TABLE product_sub ADD COLUMN `add_detail` TEXT;
-
+CREATE TABLE `gift_m` (
+	`seq` INT(11) NOT NULL AUTO_INCREMENT,
+	`gift_nm` VARCHAR(100) NOT NULL COLLATE 'utf8mb4_general_ci',
+	`gift_date` VARCHAR(100) NOT NULL COLLATE 'utf8mb4_general_ci',
+	`gift_stdt` VARCHAR(14) NOT NULL COLLATE 'utf8mb4_general_ci',
+	`gift_eddt` VARCHAR(14) NOT NULL COLLATE 'utf8mb4_general_ci',
+	`notice` VARCHAR(5000) NOT NULL COLLATE 'utf8mb4_general_ci',
+	PRIMARY KEY (`seq`) USING BTREE
+)
+COLLATE='utf8mb4_general_ci'
+ENGINE=InnoDB
+;
+CREATE TABLE `gift_sub` (
+	`id` INT(11) NOT NULL AUTO_INCREMENT,
+	`gift_seq` INT(11) NOT NULL,
+	`detailNm` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_general_ci',
+	`detail` TEXT NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`imageFile` VARCHAR(500) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`sub_sort` INT(11) NULL DEFAULT '0',
+	`date_list` VARCHAR(500) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`replace_ids` VARCHAR(500) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`add_detail` TEXT NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	PRIMARY KEY (`id`) USING BTREE,
+	INDEX `fk_gift_sub_gift_seq` (`gift_seq`) USING BTREE,
+	CONSTRAINT `fk_gift_sub_gift_seq` FOREIGN KEY (`gift_seq`) REFERENCES `gift_m` (`seq`) ON UPDATE RESTRICT ON DELETE CASCADE
+)
+COLLATE='utf8mb4_general_ci'
+ENGINE=InnoDB
+;
 
 CREATE TABLE `delivery_addr_m` (
-  `PRODUCT_SEQ` varchar(20) NOT NULL,
-  `EMP_KEY_TELNO` varchar(200) DEFAULT NULL,
-  `PRODUCT_SUB_ID` INT,
-  `EMP_NM` varchar(200) DEFAULT NULL,
-  `EMP_TELNO` varchar(200) DEFAULT NULL,
-  `EMP_COMP_NM` varchar(200) DEFAULT NULL,
-  `EMP_HQ_NM` varchar(200) DEFAULT NULL,
-  `EMP_DEPT_NM` varchar(200) DEFAULT NULL,
-  `DELIVERY_NM` varchar(200) NOT NULL,
-  `DELIVERY_TELNO` varchar(200) DEFAULT NULL,
-  `DELIVERY_POSTCODE` varchar(200) DEFAULT NULL,
-  `DELIVERY_ADDR` varchar(200) DEFAULT NULL,
-  `DELIVERY_DETAIL_ADDR` varchar(400) DEFAULT NULL,
-  `REG_DTTM` datetime(3) NOT NULL DEFAULT current_timestamp(3) ON UPDATE current_timestamp(3),
-  `UPD_DTTM` datetime(3) DEFAULT NULL,
-  `D_HOPE_DT` varchar(20) DEFAULT NULL,
-  UNIQUE KEY `uq_delivery` (`PRODUCT_SEQ`,`EMP_KEY_TELNO`),
-  CONSTRAINT fk_delivery_addr_product_seq FOREIGN KEY (PRODUCT_SEQ)
-        REFERENCES product_m(SEQ)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE,
-    CONSTRAINT fk_delivery_addr_product_sub_id FOREIGN KEY (product_sub_id)
-        REFERENCES product_sub(id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE 
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+	`gift_seq` INT(11) NOT NULL DEFAULT '0',
+	`emp_key_telno` VARCHAR(200) NOT NULL COLLATE 'utf8mb4_general_ci',
+	`gift_sub_id` INT(11) NULL DEFAULT NULL,
+	`emp_nm` VARCHAR(200) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`emp_telno` VARCHAR(200) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`emp_comp_nm` VARCHAR(200) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`emp_hq_nm` VARCHAR(200) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`emp_dept_nm` VARCHAR(200) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`delevery_nm` VARCHAR(200) NOT NULL COLLATE 'utf8mb4_general_ci',
+	`delevery_telno` VARCHAR(200) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`delevery_postcode` VARCHAR(200) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`delevery_addr` VARCHAR(200) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`delevery_detail_addr` VARCHAR(400) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`reg_dttm` DATETIME(3) NULL DEFAULT current_timestamp(3) ON UPDATE current_timestamp(3),
+	`upd_dttm` DATETIME(3) NULL DEFAULT NULL,
+	`d_hope_dt` VARCHAR(20) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	PRIMARY KEY (`gift_seq`, `emp_key_telno`) USING BTREE,
+	INDEX `idx_delivery_addr_product_sub_id` (`gift_sub_id`) USING BTREE,
+	CONSTRAINT `fk_delivery_addr_gift_seq` FOREIGN KEY (`gift_seq`) REFERENCES `gift_m` (`seq`) ON UPDATE RESTRICT ON DELETE CASCADE,
+	CONSTRAINT `fk_delivery_addr_gift_sub_id` FOREIGN KEY (`gift_sub_id`) REFERENCES `gift_sub` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
+)
+COLLATE='utf8mb4_general_ci'
+ENGINE=InnoDB
+;
 
-CREATE TABLE choice_store (
-    seq INT AUTO_INCREMENT PRIMARY KEY,
-    product_sub_id INT,
-    region VARCHAR(255) NOT NULL,
-    address VARCHAR(1000),
-    CONSTRAINT fk_product_sub_product_id FOREIGN KEY (product_sub_id)
-        REFERENCES product_sub(id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+CREATE TABLE `choice_store` (
+	`id` INT(11) NOT NULL AUTO_INCREMENT,
+	`gift_sub_id` INT(11) NOT NULL,
+	`seq` INT(11) NULL DEFAULT NULL,
+	`region` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`address` VARCHAR(1000) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`tel` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	PRIMARY KEY (`id`) USING BTREE,
+	INDEX `fk_choice_store_product_sub_id` (`gift_sub_id`) USING BTREE,
+	INDEX `idx_choice_store_prod_seq` (`gift_sub_id`, `seq`) USING BTREE,
+	CONSTRAINT `fk_gift_sub_id` FOREIGN KEY (`gift_sub_id`) REFERENCES `gift_sub` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
+)
+COLLATE='utf8mb4_general_ci'
+ENGINE=InnoDB
+;

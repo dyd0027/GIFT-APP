@@ -1,8 +1,8 @@
-import { Product } from '@/types/Product';
-import { ProductDetail } from '@/types/ProductDetail';
+import { Gift } from '@/types/Gift';
+import { GiftDetail } from '@/types/GiftDetail';
 export async function getGiftList(): Promise<{ ok: boolean; message?: string; data?: any }> {
   try {
-    const res = await fetch('/api/admin/gift/get', {
+    const res = await fetch('/api/admin/gift/get/giftList', {
       method: 'GET',
     });
 
@@ -19,10 +19,10 @@ export async function getGiftList(): Promise<{ ok: boolean; message?: string; da
 }
 
 export async function createGift(params: {
-  product: Product;
-  details: ProductDetail[];
+  gift: Gift;
+  details: GiftDetail[];
 }): Promise<{ ok: boolean; message?: string; data?: any }> {
-  const { product, details } = params;
+  const { gift, details } = params;
   const fd = new FormData();
 
   // 파일을 제외한 detail 메타데이터
@@ -38,7 +38,7 @@ export async function createGift(params: {
     isStoreInfo: d.isStoreInfo,
     storeInfos: d.storeInfos,
   }));
-  fd.append('product', JSON.stringify(product));
+  fd.append('gift', JSON.stringify(gift));
   fd.append('details', JSON.stringify(detailsMeta));
 
   details.forEach((d, i) => {
@@ -60,11 +60,11 @@ export async function createGift(params: {
   return { ok: true, data: json };
 }
 export async function updateGift(params: {
-  productSeq: number;
-  product: Product;
-  details: ProductDetail[];
+  giftSeq: number;
+  gift: Gift;
+  details: GiftDetail[];
 }): Promise<{ ok: boolean; message?: string; data?: any }> {
-  const { productSeq, product, details } = params;
+  const { giftSeq, gift, details } = params;
   const fd = new FormData();
 
   const detailsMeta = details.map((d) => ({
@@ -80,8 +80,8 @@ export async function updateGift(params: {
     storeInfos: d.storeInfos,
   }));
 
-  fd.append('productSeq', String(productSeq));
-  fd.append('product', JSON.stringify(product));
+  fd.append('giftSeq', String(giftSeq));
+  fd.append('gift', JSON.stringify(gift));
   fd.append('details', JSON.stringify(detailsMeta));
 
   details.forEach((d, i) => {

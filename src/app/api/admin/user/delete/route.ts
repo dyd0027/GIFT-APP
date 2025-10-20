@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
     const purePhone = phone.replace(/[^0-9]/g, '');
 
     const exists = await prisma.user_m.findUnique({
-      where: { LOGIN_ID: purePhone, LOGIN_NM: name },
+      where: { login_id: purePhone, login_nm: name },
     });
 
     if (!exists) {
@@ -18,8 +18,8 @@ export async function POST(req: NextRequest) {
 
     await prisma.user_m.delete({
       where: {
-        LOGIN_ID: purePhone,
-        LOGIN_NM: name,
+        login_id: purePhone,
+        login_nm: name,
       },
     });
 

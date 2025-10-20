@@ -13,7 +13,7 @@ const LoginForm = () => {
     e.preventDefault();
     const res = await fetch('/api/login', {
       method: 'POST',
-      body: JSON.stringify({ LOGIN_ID: loginId, LOGIN_NM: loginNm }),
+      body: JSON.stringify({ login_id: loginId, login_nm: loginNm }),
       headers: { 'Content-Type': 'application/json' },
     });
 

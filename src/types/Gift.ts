@@ -1,7 +1,7 @@
-export interface Product {
+export interface Gift {
   seq?: number;
-  productNm: string;
-  productDate: string;
+  giftNm: string;
+  giftDate: string;
   startDate: string;
   endDate: string;
   notice: string;

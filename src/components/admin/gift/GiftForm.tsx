@@ -9,43 +9,40 @@ import { useMemo, useState } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import { createGift, updateGift } from '@/lib/api';
 import { useRouter } from 'next/navigation';
-import { ProductDetail } from '@/types/ProductDetail';
+import { GiftDetail } from '@/types/GiftDetail';
 import { StoreInfo } from '@/types/StoreInfo';
-import { Product } from '@/types/Product';
+import { Gift } from '@/types/Gift';
 
 type GiftFormProps = {
-  productSeq?: number; // modify일 때만 값이 있음
-  initialProduct?: Product;
-  initialDetails?: ProductDetail[];
+  giftSeq?: number; // modify일 때만 값이 있음
+  initialGift?: Gift;
+  initialDetails?: GiftDetail[];
 };
 
-const GiftForm = ({ productSeq, initialProduct, initialDetails }: GiftFormProps) => {
+const GiftForm = ({ giftSeq, initialGift, initialDetails }: GiftFormProps) => {
   const router = useRouter();
   const [isHtml, setIsHtml] = useState(true);
 
-  const [product, setProduct] = useState<Product>(() => ({
-    productNm: initialProduct?.productNm ?? '',
-    notice: initialProduct?.notice ?? '',
-    startDate: initialProduct?.startDate ?? '',
-    endDate: initialProduct?.endDate ?? '',
-    productDate: initialProduct?.productDate ?? '',
+  const [gift, setGift] = useState<Gift>(() => ({
+    giftNm: initialGift?.giftNm ?? '',
+    notice: initialGift?.notice ?? '',
+    startDate: initialGift?.startDate ?? '',
+    endDate: initialGift?.endDate ?? '',
+    giftDate: initialGift?.giftDate ?? '',
   }));
 
   // DatePicker 바인딩용 Date 변환
   const startDateObj = useMemo(
-    () => (product.startDate ? new Date(product.startDate) : null),
-    [product.startDate]
+    () => (gift.startDate ? new Date(gift.startDate) : null),
+    [gift.startDate]
   );
-  const endDateObj = useMemo(
-    () => (product.endDate ? new Date(product.endDate) : null),
-    [product.endDate]
-  );
-  const productDateObj = useMemo(
-    () => (product.productDate ? new Date(product.productDate) : null),
-    [product.productDate]
+  const endDateObj = useMemo(() => (gift.endDate ? new Date(gift.endDate) : null), [gift.endDate]);
+  const giftDateObj = useMemo(
+    () => (gift.giftDate ? new Date(gift.giftDate) : null),
+    [gift.giftDate]
   );
 
-  const [details, setDetails] = useState<ProductDetail[]>(
+  const [details, setDetails] = useState<GiftDetail[]>(
     initialDetails && initialDetails.length > 0
       ? initialDetails
       : [
@@ -65,10 +62,10 @@ const GiftForm = ({ productSeq, initialProduct, initialDetails }: GiftFormProps)
           },
         ]
   );
-  const setProductField = <K extends keyof Product>(key: K, v: Product[K]) =>
-    setProduct((p) => ({ ...p, [key]: v }));
+  const setGiftField = <K extends keyof Gift>(key: K, v: Gift[K]) =>
+    setGift((p) => ({ ...p, [key]: v }));
 
-  const addProductDetail = () => {
+  const addGiftDetail = () => {
     setDetails((prev) => [
       ...prev,
       {
@@ -95,11 +92,11 @@ const GiftForm = ({ productSeq, initialProduct, initialDetails }: GiftFormProps)
     return `${yyyy}${mm}${dd}`;
   };
 
-  const removeProductDetail = (id: number) => {
+  const removeGiftDetail = (id: number) => {
     setDetails((prev) => prev.filter((item) => item.id !== id));
   };
 
-  const handleDetailChange = (id: number, key: keyof ProductDetail, value: any) => {
+  const handleDetailChange = (id: number, key: keyof GiftDetail, value: any) => {
     setDetails((prev) => prev.map((item) => (item.id === id ? { ...item, [key]: value } : item)));
   };
 
@@ -123,9 +120,9 @@ const GiftForm = ({ productSeq, initialProduct, initialDetails }: GiftFormProps)
   };
 
   const handleSubmit = async () => {
-    const { productNm, startDate, endDate, productDate, notice } = product;
+    const { giftNm, startDate, endDate, giftDate, notice } = gift;
 
-    if (!productNm || !startDate || !endDate || !productDate || !notice) {
+    if (!giftNm || !startDate || !endDate || !giftDate || !notice) {
       alert('필수 값을 입력해주세요.');
       return;
     }
@@ -142,9 +139,9 @@ const GiftForm = ({ productSeq, initialProduct, initialDetails }: GiftFormProps)
     }
 
     try {
-      if (!productSeq) {
+      if (!giftSeq) {
         const res = await createGift({
-          product,
+          gift,
           details,
         });
         if (res.ok) {
@@ -155,8 +152,8 @@ const GiftForm = ({ productSeq, initialProduct, initialDetails }: GiftFormProps)
         }
       } else {
         const res = await updateGift({
-          productSeq,
-          product,
+          giftSeq,
+          gift,
           details,
         });
         if (res.ok) {
@@ -186,8 +183,8 @@ const GiftForm = ({ productSeq, initialProduct, initialDetails }: GiftFormProps)
             선물 년/월<span className="text-[red]">*</span>
           </div>
           <DatePicker
-            selected={productDateObj}
-            onChange={(date) => setProductField('productDate', date ? date.toISOString() : '')}
+            selected={giftDateObj}
+            onChange={(date) => setGiftField('giftDate', date ? date.toISOString() : '')}
             dateFormat="yyyy/MM"
             className="w-[90px] cursor-pointer rounded-md border p-2"
             showMonthYearPicker
@@ -199,14 +196,14 @@ const GiftForm = ({ productSeq, initialProduct, initialDetails }: GiftFormProps)
           </div>
           <DatePicker
             selected={startDateObj}
-            onChange={(date) => setProductField('startDate', date ? date.toISOString() : '')}
+            onChange={(date) => setGiftField('startDate', date ? date.toISOString() : '')}
             dateFormat="yyyy/MM/dd"
             className="w-[100px] cursor-pointer rounded-md border p-2"
           />
           ~
           <DatePicker
             selected={endDateObj}
-            onChange={(date) => setProductField('endDate', date ? date.toISOString() : '')}
+            onChange={(date) => setGiftField('endDate', date ? date.toISOString() : '')}
             dateFormat="yyyy/MM/dd"
             className="w-[100px] cursor-pointer rounded-md border p-2"
           />
@@ -218,8 +215,8 @@ const GiftForm = ({ productSeq, initialProduct, initialDetails }: GiftFormProps)
           <input
             type="text"
             placeholder="선물명"
-            value={product.productNm}
-            onChange={(e) => setProductField('productNm', e.target.value)}
+            value={gift.giftNm}
+            onChange={(e) => setGiftField('giftNm', e.target.value)}
             className="flex-1 rounded border p-2"
           />
         </div>
@@ -510,7 +507,7 @@ const GiftForm = ({ productSeq, initialProduct, initialDetails }: GiftFormProps)
               <div className="w-full text-right">
                 <Button
                   label="삭제"
-                  onClick={() => removeProductDetail(item.id)}
+                  onClick={() => removeGiftDetail(item.id)}
                   className="w-[80px] bg-red-600 text-white hover:bg-red-700"
                 />
               </div>
@@ -518,7 +515,7 @@ const GiftForm = ({ productSeq, initialProduct, initialDetails }: GiftFormProps)
           </div>
         ))}
         <div>
-          <Button label="상품 추가" onClick={addProductDetail} className="float-right w-[120px]" />
+          <Button label="상품 추가" onClick={addGiftDetail} className="float-right w-[120px]" />
         </div>
 
         <div className="flex">
@@ -527,8 +524,8 @@ const GiftForm = ({ productSeq, initialProduct, initialDetails }: GiftFormProps)
           </div>
           <div className="flex-1">
             <TiptapEditor
-              notice={product.notice}
-              setNotice={(v: string) => setProductField('notice', v)}
+              notice={gift.notice}
+              setNotice={(v: string) => setGiftField('notice', v)}
             />
           </div>
         </div>
@@ -536,7 +533,7 @@ const GiftForm = ({ productSeq, initialProduct, initialDetails }: GiftFormProps)
 
       <AsyncButton
         handleSubmit={handleSubmit}
-        label={productSeq ? '수정' : '등록'}
+        label={giftSeq ? '수정' : '등록'}
         className="mb-[80px] mt-[50px]"
       />
     </div>

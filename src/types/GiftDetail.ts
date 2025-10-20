@@ -1,6 +1,6 @@
 import { StoreInfo } from '@/types/StoreInfo';
 
-export interface ProductDetail {
+export interface GiftDetail {
   id: number;
   detailNm: string;
   detail: string;

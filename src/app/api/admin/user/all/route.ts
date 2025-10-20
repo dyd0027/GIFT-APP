@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     const ADMIN_ID = 'sangsangin';
 
     const result = await prisma.$transaction(async (tx) => {
-      await tx.user_m.deleteMany({ where: { NOT: { LOGIN_ID: ADMIN_ID } } });
+      await tx.user_m.deleteMany({ where: { NOT: { login_id: ADMIN_ID } } });
 
       const insertData = users.map((item, idx) => {
         const phone = String(item.phone ?? '').trim();
@@ -33,11 +33,11 @@ export async function POST(req: NextRequest) {
         }
 
         return {
-          LOGIN_ID: phone,
-          LOGIN_NM: name,
-          COMP_NM: comp,
-          HQ_NM: hq,
-          DEPT_NM: dept,
+          login_id: phone,
+          login_nm: name,
+          comp_nm: comp,
+          hq_nm: hq,
+          dept_nm: dept,
         };
       });
 

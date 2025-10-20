@@ -7,17 +7,17 @@ import { createToken } from '@/lib/auth';
 
 export async function POST(req: NextRequest) {
   try {
-    const { LOGIN_ID, LOGIN_NM } = await req.json();
+    const { login_id, login_nm } = await req.json();
 
     const user = await prisma.user_m.findUnique({
-      where: { LOGIN_ID, LOGIN_NM },
+      where: { login_id, login_nm },
     });
 
     if (!user) {
       return NextResponse.json({ success: false });
     }
 
-    const token = createToken({ LOGIN_ID });
+    const token = createToken({ login_id });
     console.log('user????', user);
     const res = NextResponse.json({ success: true, user });
     res.headers.set(

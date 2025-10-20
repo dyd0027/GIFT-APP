@@ -11,11 +11,11 @@ export async function POST(req: NextRequest) {
     }
 
     const data = users.map((user: any) => ({
-      LOGIN_ID: user.phone,
-      LOGIN_NM: user.name,
-      COMP_NM: user.company ?? '',
-      HQ_NM: user.hq ?? '',
-      DEPT_NM: user.dept ?? '',
+      login_id: user.phone,
+      login_nm: user.name,
+      comp_nm: user.company ?? '',
+      hq_nm: user.hq ?? '',
+      dept_nm: user.dept ?? '',
     }));
 
     await prisma.user_m.createMany({ data, skipDuplicates: true });
