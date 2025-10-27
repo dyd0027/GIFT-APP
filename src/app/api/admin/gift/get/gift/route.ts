@@ -1,11 +1,19 @@
+import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { isoFromYYYYMMDDHHMMSS, toFirstDayISOFromLabel } from '@/utils/date';
 
 const prisma = new PrismaClient();
 
-export async function GET(seq: number) {
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const seq = Number(searchParams.get('seq'));
+
+  if (!seq) {
+    return NextResponse.json({ ok: false, message: 'seq 파라미터가 없습니다.' }, { status: 400 });
+  }
+
   const gift = await prisma.gift_m.findFirst({
-    where: { seq: seq },
+    where: { seq },
     include: {
       gift_sub: {
         include: { choice_store: true },
@@ -13,7 +21,12 @@ export async function GET(seq: number) {
     },
   });
 
-  if (!gift) return null;
+  if (!gift) {
+    return NextResponse.json(
+      { ok: false, message: '해당 선물이 존재하지 않습니다.' },
+      { status: 404 }
+    );
+  }
 
   const initialGift = {
     giftNm: gift.gift_nm,
@@ -43,9 +56,15 @@ export async function GET(seq: number) {
     })),
   }));
 
-  return {
-    giftSeq: gift.seq,
-    initialGift,
-    initialDetails,
-  };
+  return NextResponse.json(
+    {
+      ok: true,
+      data: {
+        giftSeq: gift.seq,
+        initialGift,
+        initialDetails,
+      },
+    },
+    { status: 200 }
+  );
 }

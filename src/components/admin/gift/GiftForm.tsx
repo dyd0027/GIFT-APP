@@ -5,7 +5,7 @@ import AsyncButton from '@/components/common/AsyncButton';
 import Button from '@/components/common/Button';
 import TiptapEditor from '@/components/common/TipTopEditor';
 import * as XLSX from 'xlsx';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import { createGift } from '@/lib/client/gift/createGift';
 import { updateGift } from '@/lib/client/gift/updateGift';
@@ -168,7 +168,66 @@ const GiftForm = ({ giftSeq, initialGift, initialDetails }: GiftFormProps) => {
       alert(e?.message ?? '에러가 발생했습니다.');
     }
   };
+  useEffect(() => {
+    // 초기화
+    if (initialGift) {
+      setGift({
+        giftNm: initialGift.giftNm ?? '',
+        notice: initialGift.notice ?? '',
+        startDate: initialGift.startDate ?? '',
+        endDate: initialGift.endDate ?? '',
+        giftDate: initialGift.giftDate ?? '',
+      });
+    } else {
+      setGift({
+        giftNm: '',
+        notice: '',
+        startDate: '',
+        endDate: '',
+        giftDate: '',
+      });
+    }
 
+    if (initialDetails) {
+      setDetails(
+        initialDetails.length > 0
+          ? initialDetails
+          : [
+              {
+                id: 0,
+                detailNm: '',
+                detail: '',
+                addDetail: '',
+                imageFile: null,
+                previewUrl: null,
+                subSort: 0,
+                dateList: [],
+                isReplaceable: false,
+                replaceIds: [],
+                isStoreInfo: false,
+                storeInfos: [],
+              },
+            ]
+      );
+    } else {
+      setDetails([
+        {
+          id: 0,
+          detailNm: '',
+          detail: '',
+          addDetail: '',
+          imageFile: null,
+          previewUrl: null,
+          subSort: 0,
+          dateList: [],
+          isReplaceable: false,
+          replaceIds: [],
+          isStoreInfo: false,
+          storeInfos: [],
+        },
+      ]);
+    }
+  }, [initialGift, initialDetails]);
   return (
     <div className="mt-[10px] flex w-full flex-col px-[10px]">
       <div className="flex flex-col gap-2">

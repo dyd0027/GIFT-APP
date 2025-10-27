@@ -4,7 +4,7 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { TextStyle } from '@tiptap/extension-text-style';
 import Color from '@tiptap/extension-color';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface TiptapEditorProps {
   notice: string;
@@ -43,7 +43,13 @@ export default function TiptapEditor({ notice, setNotice }: TiptapEditorProps) {
   const toggleBold = () => {
     editor?.chain().focus().toggleBold().run();
   };
+  useEffect(() => {
+    if (editor && notice !== editor.getHTML()) {
+      editor.commands.setContent(notice);
+    }
+  }, [notice, editor]);
 
+  if (!editor) return null;
   return (
     <div className="mx-auto w-full">
       <div className="flex gap-2 rounded border p-[5px]">
