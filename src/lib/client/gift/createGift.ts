@@ -8,7 +8,6 @@ export async function createGift(params: {
   const { gift, details } = params;
   const fd = new FormData();
 
-  // 파일을 제외한 detail 메타데이터
   const detailsMeta = details.map((d) => ({
     id: d.id,
     detailNm: d.detailNm,
@@ -20,7 +19,9 @@ export async function createGift(params: {
     replaceIds: d.replaceIds,
     isStoreInfo: d.isStoreInfo,
     storeInfos: d.storeInfos,
+    previewUrl: d.previewUrl ?? null,
   }));
+
   fd.append('gift', JSON.stringify(gift));
   fd.append('details', JSON.stringify(detailsMeta));
 

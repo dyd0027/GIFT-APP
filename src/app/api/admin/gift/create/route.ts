@@ -2,7 +2,7 @@
 export const runtime = 'nodejs';
 
 import { NextRequest, NextResponse } from 'next/server';
-import { mkdir, writeFile } from 'fs/promises';
+import { mkdir, readFile, writeFile } from 'fs/promises';
 import path from 'path';
 import { PrismaClient } from '@prisma/client';
 import { Gift } from '@/types/Gift';
@@ -107,23 +107,39 @@ export async function POST(req: NextRequest) {
       // 이미지 저장 + gift_sub.imageFile 업데이트
       for (const { index, subId } of createdSubs) {
         const file = form.get(`detailImage_${index}`);
+        const previewUrl = form.get(`previewUrl_${index}`); // 프론트에서 넘김
+
         if (file && file instanceof File) {
           const arrayBuffer = await file.arrayBuffer();
           const buffer = Buffer.from(arrayBuffer);
-          // 확장자 얻기
-          const origName = (file as File).name || 'file';
-          const dotIdx = origName.lastIndexOf('.');
-          const ext = dotIdx >= 0 ? origName.slice(dotIdx) : '.bin';
 
+          const origName = file.name || 'file';
+          const ext = path.extname(origName) || '.bin';
           const fileName = `${giftSeq}_${subId}${ext}`;
           const abs = path.join(uploadDir, fileName);
-          await writeFile(abs, buffer);
 
-          const publicPath = `/uploads/gift/${fileName}`;
+          await writeFile(abs, buffer);
           await tx.gift_sub.update({
             where: { id: subId },
-            data: { imageFile: publicPath },
+            data: { imageFile: `/uploads/gift/${fileName}` },
           });
+        } else if (previewUrl && typeof previewUrl === 'string') {
+          // 복사된 이미지 경로에서 복제
+          const prevPath = path.join(process.cwd(), 'public', previewUrl);
+          const ext = path.extname(previewUrl) || '.bin';
+          const fileName = `${giftSeq}_${subId}${ext}`;
+          const newPath = path.join(uploadDir, fileName);
+
+          try {
+            const prevBuffer = await readFile(prevPath); // Buffer 반환
+            await writeFile(newPath, prevBuffer);
+            await tx.gift_sub.update({
+              where: { id: subId },
+              data: { imageFile: `/uploads/gift/${fileName}` },
+            });
+          } catch (e: any) {
+            console.warn('복사 실패:', e.message);
+          }
         }
       }
 

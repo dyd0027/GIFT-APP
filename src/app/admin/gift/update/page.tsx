@@ -10,6 +10,7 @@ export default async function UpdateGiftPage() {
 
   return (
     <GiftForm
+      mode="update"
       giftSeq={latest.giftSeq}
       initialGift={latest.initialGift}
       initialDetails={latest.initialDetails}

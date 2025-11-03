@@ -8,30 +8,24 @@ import { getGiftList } from '@/lib/client/gift/getGiftList';
 import { getGift } from '@/lib/client/gift/getGift';
 import { GiftDetail } from '@/types/GiftDetail';
 import { useRouter } from 'next/navigation';
-const CreateGiftPage = () => {
+const CopyGiftPage = () => {
   const router = useRouter();
-  const [isPrev, setIsPrev] = useState(false);
   const [prevGift, setPrevGift] = useState<Gift[]>();
   const [prevSeq, setPrevSeq] = useState<number>();
   const [initialGift, setInitialGift] = useState<Gift>();
   const [initialDetails, setInitialDetails] = useState<GiftDetail[]>();
-  const handlePrev = async () => {
-    if (!isPrev) {
+  useEffect(() => {
+    const fetchGifts = async () => {
       const res = await getGiftList();
-      if (res.ok && !prevGift) {
+      if (res.ok) {
         setPrevGift(res.data.data);
+      } else {
+        alert('이전 선물 목록 불러오기 실패');
       }
-      if (!res.ok) {
-        alert('오류내용:' + res?.message?.toString());
-      }
-    } else {
-      if (!confirm('초기화 하시겠습니까?')) {
-        return;
-      }
-      setPrevSeq(undefined);
-    }
-    setIsPrev((prev) => !prev);
-  };
+    };
+
+    fetchGifts();
+  }, []);
   useEffect(() => {
     if (prevSeq) {
       getGift(prevSeq).then((res) => {
@@ -49,14 +43,28 @@ const CreateGiftPage = () => {
     <div className="flex flex-col">
       <div className="px-[10px]">
         <Button
-          label="이전 선물 양식 불러오기"
-          onClick={() => router.push('/admin/gift/copy')}
+          label="초기화"
+          onClick={() => router.push('/admin/gift/create')}
           className="w-[220px]"
         />
+        <div>
+          <select
+            name="prevGift"
+            className="rounded border p-2"
+            onChange={(e) => setPrevSeq(Number(e.target.value))}
+          >
+            <option value={undefined}>미선택</option>
+            {prevGift?.map((gift) => (
+              <option key={gift.seq} value={gift.seq}>
+                {`${gift.giftDate}: ${gift.giftNm}`}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
-      <GiftForm mode="create" />
+      <GiftForm mode="copy" initialDetails={initialDetails} initialGift={initialGift} />
     </div>
   );
 };
 
-export default CreateGiftPage;
+export default CopyGiftPage;
