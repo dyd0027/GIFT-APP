@@ -81,7 +81,7 @@ const GiftForm = ({ mode, giftSeq, initialGift, initialDetails }: GiftFormProps)
 
     setDetails(
       initialDetails && initialDetails.length > 0
-        ? initialDetails.map((d, idx) => ({ ...d, id: idx }))
+        ? initialDetails.map((d) => ({ ...d }))
         : [{ ...EMPTY_DETAIL }]
     );
   };
@@ -161,7 +161,15 @@ const GiftForm = ({ mode, giftSeq, initialGift, initialDetails }: GiftFormProps)
       return false;
     }
 
-    const hasInvalidDetail = details.some((d) => !d.detailNm || !d.detail || !d.imageFile);
+    const hasInvalidDetail = details.some((d) => {
+      if (!d.detailNm || !d.detail) return true;
+
+      // create나 copy일 땐 imageFile 필수
+      if ((mode === 'create' || mode === 'copy') && !d.imageFile) return true;
+
+      // update일 경우, imageFile 없어도 OK
+      return false;
+    });
 
     if (hasInvalidDetail) {
       alert('상세 품목 필수 값을 입력해주세요.');
@@ -179,7 +187,7 @@ const GiftForm = ({ mode, giftSeq, initialGift, initialDetails }: GiftFormProps)
         const res = await createGift({ gift, details });
         if (res.ok) {
           alert('등록되었습니다.');
-          router.push('/admin/gift/update');
+          router.push('/admin');
         } else {
           alert(`등록 실패: ${res.message ?? '알 수 없는 오류'}`);
         }
@@ -262,7 +270,10 @@ const GiftForm = ({ mode, giftSeq, initialGift, initialDetails }: GiftFormProps)
             allDetails={details}
             onChange={(key, value) => handleDetailChange(item.id, key, value)}
             onRemove={() => removeGiftDetail(item.id)}
-            onImageChange={(file) => handleDetailChange(item.id, 'imageFile', file)}
+            onImageChange={(file) => {
+              handleDetailChange(item.id, 'imageFile', file);
+              handleDetailChange(item.id, 'previewUrl', file ? URL.createObjectURL(file) : null);
+            }}
           />
         ))}
 

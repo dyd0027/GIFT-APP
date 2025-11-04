@@ -157,10 +157,7 @@ const GiftDetailCard = ({
             accept="image/*"
             onChange={(e) => {
               const file = e.target.files?.[0] || null;
-              if (!file) return;
-              onChange('imageFile', file);
-              const previewUrl = URL.createObjectURL(file);
-              onChange('previewUrl', previewUrl);
+              onImageChange(file);
             }}
           />
           {detail.previewUrl && (
@@ -192,6 +189,10 @@ const GiftDetailCard = ({
                 {allDetails
                   .filter((d) => d.id !== detail.id)
                   .map((opt) => {
+                    console.log('detail>>', detail);
+                    console.log('opt>>', opt);
+                    console.log('otp.id>>', opt.id);
+                    console.log('detail.replaceIds>>', detail.replaceIds);
                     const selected = detail.replaceIds.includes(opt.id);
                     return (
                       <button
