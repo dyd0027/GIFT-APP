@@ -1,6 +1,6 @@
 'use client';
 
-import GiftForm from '@/components/admin/gift/GiftForm';
+import AdminGiftForm from '@/components/admin/gift/AdminGiftForm';
 import Button from '@/components/common/Button';
 import { useEffect, useState } from 'react';
 import { Gift } from '@/types/Gift';
@@ -54,7 +54,7 @@ const CreateGiftPage = () => {
           className="w-[220px]"
         />
       </div>
-      <GiftForm mode="create" />
+      <AdminGiftForm mode="create" />
     </div>
   );
 };

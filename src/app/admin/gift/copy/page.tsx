@@ -1,6 +1,6 @@
 'use client';
 
-import GiftForm from '@/components/admin/gift/GiftForm';
+import AdminGiftForm from '@/components/admin/gift/AdminGiftForm';
 import Button from '@/components/common/Button';
 import { useEffect, useState } from 'react';
 import { Gift } from '@/types/Gift';
@@ -62,7 +62,7 @@ const CopyGiftPage = () => {
           </select>
         </div>
       </div>
-      <GiftForm mode="copy" initialDetails={initialDetails} initialGift={initialGift} />
+      <AdminGiftForm mode="copy" initialDetails={initialDetails} initialGift={initialGift} />
     </div>
   );
 };

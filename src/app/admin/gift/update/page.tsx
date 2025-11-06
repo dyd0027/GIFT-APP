@@ -1,4 +1,4 @@
-import GiftForm from '@/components/admin/gift/GiftForm';
+import AdminGiftForm from '@/components/admin/gift/AdminGiftForm';
 import AutoRefreshWrapper from '@/components/common/AutoRefreshWrapper';
 import { getLatestGiftData } from '@/lib/server/gift/getLatestGiftData';
 
@@ -12,7 +12,7 @@ export default async function UpdateGiftPage() {
   return (
     <>
       <AutoRefreshWrapper />
-      <GiftForm
+      <AdminGiftForm
         mode="update"
         giftSeq={latest.giftSeq}
         initialGift={latest.initialGift}

@@ -32,14 +32,14 @@ const EMPTY_DETAIL: GiftDetail = {
   storeInfos: [],
 };
 
-type GiftFormProps = {
+type AdminGiftFormProps = {
   mode: 'create' | 'copy' | 'update';
   giftSeq?: number;
   initialGift?: Gift;
   initialDetails?: GiftDetail[];
 };
 
-const GiftForm = ({ mode, giftSeq, initialGift, initialDetails }: GiftFormProps) => {
+const AdminGiftForm = ({ mode, giftSeq, initialGift, initialDetails }: AdminGiftFormProps) => {
   const router = useRouter();
   const [isHtml, setIsHtml] = useState(true);
 
@@ -301,4 +301,4 @@ const GiftForm = ({ mode, giftSeq, initialGift, initialDetails }: GiftFormProps)
   );
 };
 
-export default GiftForm;
+export default AdminGiftForm;
