@@ -29,6 +29,9 @@ export async function createGift(params: {
     if (d.imageFile) {
       fd.append(`detailImage_${i}`, d.imageFile, d.imageFile.name);
     }
+    if (d.previewUrl) {
+      fd.append(`previewUrl_${i}`, d.previewUrl);
+    }
   });
 
   const res = await fetch('/api/admin/gift/create', {

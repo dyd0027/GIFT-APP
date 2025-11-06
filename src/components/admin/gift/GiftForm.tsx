@@ -96,7 +96,7 @@ const GiftForm = ({ mode, giftSeq, initialGift, initialDetails }: GiftFormProps)
             if (d.previewUrl) {
               try {
                 const ext = d.previewUrl.split('.').pop()?.split('?')[0] || 'png';
-                const fileName = `copied_${idx}.${ext}`;
+                const fileName = `copied_${d.id}.${ext}`;
                 imageFile = await urlToFile(d.previewUrl, fileName);
               } catch (e) {
                 console.warn('이미지 복사 실패:', e);
@@ -105,8 +105,6 @@ const GiftForm = ({ mode, giftSeq, initialGift, initialDetails }: GiftFormProps)
 
             return {
               ...d,
-              id: idx,
-              subSort: idx,
               imageFile,
             };
           })
