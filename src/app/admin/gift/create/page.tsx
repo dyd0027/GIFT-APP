@@ -46,7 +46,7 @@ const CreateGiftPage = () => {
     }
   }, [prevSeq]);
   return (
-    <div className="flex flex-col">
+    <div className="flex w-full flex-col">
       <div className="px-[10px]">
         <Button
           label="이전 선물 양식 불러오기"

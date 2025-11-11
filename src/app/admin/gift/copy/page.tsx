@@ -40,7 +40,7 @@ const CopyGiftPage = () => {
     }
   }, [prevSeq]);
   return (
-    <div className="flex flex-col">
+    <div className="flex w-full flex-col">
       <div className="px-[10px]">
         <Button
           label="초기화"

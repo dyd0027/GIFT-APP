@@ -72,11 +72,11 @@ export default function Header() {
                   )}
                   <li>
                     <Link
-                      href="/page1"
+                      href="/gift"
                       className="block px-4 py-2 hover:bg-indigo-100"
                       onClick={toggleMenu}
                     >
-                      1번 페이지
+                      메인 페이지
                     </Link>
                   </li>
                   <li>
