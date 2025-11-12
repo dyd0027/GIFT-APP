@@ -30,7 +30,7 @@ const LoginForm = () => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="mt-8 w-full max-w-sm space-y-4 rounded-xl bg-white p-6 shadow-md"
+      className="mt-8 w-full space-y-4 rounded-xl bg-white p-6 shadow-md"
     >
       <h1 className="text-center text-2xl font-bold">선물 신청 로그인</h1>
 
