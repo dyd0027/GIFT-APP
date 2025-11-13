@@ -19,3 +19,13 @@ export function toFirstDayISOFromLabel(label: string) {
   const mm = Number(m[2]) - 1;
   return new Date(yyyy, mm, 1).toISOString();
 }
+
+// yyyyMMdd -> yyyy.MM.dd(Days)
+export function formatDateWithDay(yyyymmdd: string): string {
+  const year = yyyymmdd.slice(0, 4);
+  const month = yyyymmdd.slice(4, 6);
+  const day = yyyymmdd.slice(6, 8);
+  const date = new Date(`${year}-${month}-${day}`);
+  const days = ['일', '월', '화', '수', '목', '금', '토'];
+  return `${year}.${month}.${day}(${days[date.getDay()]})`;
+}

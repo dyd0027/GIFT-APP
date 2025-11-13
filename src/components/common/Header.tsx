@@ -76,16 +76,16 @@ export default function Header() {
                       className="block px-4 py-2 hover:bg-indigo-100"
                       onClick={toggleMenu}
                     >
-                      메인 페이지
+                      홈
                     </Link>
                   </li>
                   <li>
                     <Link
-                      href="/page2"
+                      href="/gift/create"
                       className="block px-4 py-2 hover:bg-indigo-100"
                       onClick={toggleMenu}
                     >
-                      2번 페이지
+                      신청정보 입력
                     </Link>
                   </li>
                   <li>

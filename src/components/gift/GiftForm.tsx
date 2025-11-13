@@ -19,6 +19,11 @@ const GiftForm = ({ initialGift, initialDetails = [] }: Props) => {
     <>
       <div className="my-[30px] text-center text-[30px] font-bold">임직원 선물</div>
       <div className="text-center text-[20px] font-bold">{initialGift?.giftNm}</div>
+      <div className="mt-[5px] text-center leading-[18px]">
+        신청기간
+        <br />
+        {initialGift?.startDate?.slice(0, 10)} ~ {initialGift?.endDate?.slice(0, 10)}
+      </div>
 
       {/* 슬라이드 */}
       <div className="relative mx-[10px] my-[30px] w-[-webkit-fill-available] rounded border border-[#c2c2c2] p-[10px] shadow">
@@ -43,7 +48,6 @@ const GiftForm = ({ initialGift, initialDetails = [] }: Props) => {
                 <div className="mb-1">
                   <strong>품목:</strong> {detail.detail}
                 </div>
-                {detail.addDetail && <div className="mb-1">{detail.addDetail}</div>}
                 {detail.previewUrl && (
                   <div className="mt-2">
                     <img
