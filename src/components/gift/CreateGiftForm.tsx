@@ -20,6 +20,7 @@ const CreateGiftForm = ({ initialGift, initialDetails = [] }: Props) => {
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [selectedStoreSeq, setSelectedStoreSeq] = useState<number | ''>('');
   const [selectedDate, setSelectedDate] = useState('');
+  const [selectedReplaceId, setSelectedReplaceId] = useState('');
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   const giftRef = useRef<HTMLDivElement>(null);
@@ -44,7 +45,9 @@ const CreateGiftForm = ({ initialGift, initialDetails = [] }: Props) => {
       setSelectedId(initialDetails[0].id);
     }
   }, [initialDetails]);
-
+  useEffect(() => {
+    console.log(selected);
+  }, [selected]);
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (
@@ -243,6 +246,54 @@ const CreateGiftForm = ({ initialGift, initialDetails = [] }: Props) => {
                           <span>{formatDateWithDay(date)}</span>
                         </label>
                       ))}
+                    </div>
+                  </div>
+                )}
+                {/* 대체상품 선택 */}
+                {selected.isReplaceable && (
+                  <div className="mt-6">
+                    <div className="mb-2 font-semibold">
+                      대체상품 선택<span className="text-[red]">*</span>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      {selected.replaceIds.flatMap((seq) => {
+                        const item = initialDetails.find((d) => d.id === seq);
+                        if (!item) return [];
+
+                        if (item.dateList && item.dateList.length > 0) {
+                          return item.dateList.map((date) => {
+                            const compoundValue = `${item.id}_${date}`; // 저장 시: replace_id + replace_hope_dt
+                            return (
+                              <label key={compoundValue} className="inline-flex items-center gap-2">
+                                <input
+                                  type="radio"
+                                  name="replaceItem"
+                                  value={compoundValue}
+                                  checked={selectedReplaceId === compoundValue}
+                                  onChange={() => setSelectedReplaceId(compoundValue)}
+                                />
+                                <span>
+                                  {item.detailNm} {formatDateWithDay(date)}
+                                </span>
+                              </label>
+                            );
+                          });
+                        } else {
+                          return (
+                            <label key={item.id} className="inline-flex items-center gap-2">
+                              <input
+                                type="radio"
+                                name="replaceItem"
+                                value={item.id}
+                                checked={selectedReplaceId === String(item.id)}
+                                onChange={() => setSelectedReplaceId(String(item.id))}
+                              />
+                              <span>{item.detailNm}</span>
+                            </label>
+                          );
+                        }
+                      })}
                     </div>
                   </div>
                 )}
